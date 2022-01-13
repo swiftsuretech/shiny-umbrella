@@ -66,11 +66,24 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
     }
   }
 
+  provisioner "file" {
+    source      = "./setup_bastion.sh"
+    destination = "/home/centos/setup_bastion"
+    connection {
+      type        = "ssh"
+      user        = "centos"
+      private_key = file("./keys/btsec_twin.pem")
+      host        = aws_instance.btsec-pov-bastion-instance.public_ip
+    }
+  }
+
   provisioner "remote-exec" {
     inline = [
       "chmod 400 /home/centos/.ssh/btsec_twin.pem",
       "echo IdentityFile /home/centos/.ssh/btsec_twin.pem > /home/centos/.ssh/config",
-      "chmod 600 /home/centos/.ssh/config"
+      "chmod 600 /home/centos/.ssh/config",
+      "chmod +x /home/centos/setup_bastion",
+      "/home/centos/setup_bastion",
     ]
     connection {
       type        = "ssh"
