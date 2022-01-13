@@ -1,0 +1,63 @@
+---
+- hosts: registry
+  gather_facts: no
+  become: yes
+  tasks: 
+  - name: Disable SELinux
+    ansible.posix.selinux:
+      state: disabled
+
+  - name: Install yum utils
+    yum:
+      name:
+      - yum-utils
+
+  - name: Configure Docker Repo
+    command: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+  - name: Install packages
+    yum:
+      name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - wget
+      - git
+      - python-docker
+      - curl
+      state: present
+  
+  - name: Create docker group
+    group:
+      name: docker
+      state: present
+  
+  - name: Add centos user to docker group    
+    user: 
+      name: centos
+      groups: docker
+      append: yes 
+  
+  - name: Start docker service
+    service:
+      name: docker
+      state: started
+      enabled: yes
+  
+  - name: Set registry as insecure as it has a self signed cert
+    copy:
+      dest: "/etc/docker/daemon.json"
+      content: |
+        {"insecure-registries" : ["{{inventory_hostname}}:5000","{{inventory_hostname}}:5001","{{inventory_hostname}}:5002"]}
+  
+  - name: Daemon reload and restart docker service
+    service:
+      name: docker
+      state: restarted
+      enabled: yes
+      daemon_reload: yes
+  
+  - name: Download and configure kubectl
+    get_url:
+      url: "https://dl.k8s.io/release/{{kubectl_version}}/bin/linux/amd64/kubectl"
+      dest: /usr/local/bin/kubectl
+      mode: 0711
