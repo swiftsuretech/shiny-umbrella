@@ -16,7 +16,7 @@ resource "aws_instance" "btsec-pov-worker-node" {
   secondary_private_ips                = []
   source_dest_check                    = true
   subnet_id                            = aws_subnet.btsec-pov-subnet.id
-  count                                = 3
+  count                                = 4
   tags = {
     Name       = "${var.cluster_name}-worker-node-${count.index}"
     expiration = "5d"

@@ -19,7 +19,7 @@ locals {
   bastion_r = aws_instance.btsec-pov-bastion-instance.public_ip
   control   = aws_instance.btsec-pov-control-plane.*.private_ip
   workers   = aws_instance.btsec-pov-worker-node.*.private_ip
-  connect   = "ssh -i ./keys/btsec_twin.pem centos@${aws_instance.btsec-pov-bastion-instance.public_ip}"
+  connect   = "ssh -i ../keys/btsec_twin.pem centos@${aws_instance.btsec-pov-bastion-instance.public_ip}"
 }
 
 output "output" {
