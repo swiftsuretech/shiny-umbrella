@@ -9,6 +9,6 @@ resource "aws_route_table" "btsec-pov-public-rt" {
     ignore_changes = [route, tags]
   }
   tags = {
-    "Name" = "btsec-pov-rt"
+    "Name" = "${var.cluster_name}-rt"
   }
 }

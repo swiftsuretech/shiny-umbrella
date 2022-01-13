@@ -18,7 +18,7 @@ resource "aws_instance" "btsec-pov-worker-node" {
   subnet_id                            = aws_subnet.btsec-pov-subnet.id
   count                                = 3
   tags = {
-    Name       = "btsec-pov-worker-node-${count.index}"
+    Name       = "${var.cluster_name}-worker-node-${count.index}"
     expiration = "5d"
     Owner      = "@Dave Whitehouse"
   }
@@ -52,7 +52,7 @@ resource "aws_instance" "btsec-pov-worker-node" {
     volume_size           = 100
     volume_type           = "gp2"
     tags = {
-      "Name" = "btsec-pov-worker-node-${count.index}"
+      "Name" = "${var.cluster_name}-worker-node-${count.index}"
     }
   }
 }

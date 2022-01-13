@@ -17,7 +17,7 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
   source_dest_check                    = true
   subnet_id                            = aws_subnet.btsec-pov-subnet.id
   tags = {
-    Name       = "btsec-pov-bastion-node"
+    Name       = "${var.cluster_name}-bastion-node"
     expiration = "5d"
     Owner      = "@Dave Whitehouse"
   }
@@ -51,7 +51,7 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
     volume_size           = 100
     volume_type           = "gp2"
     tags = {
-      "Name" = "btsec-pov-bastion"
+      "Name" = "${var.cluster_name}-bastion"
     }
   }
 

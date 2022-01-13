@@ -18,7 +18,7 @@ resource "aws_instance" "btsec-pov-control-plane" {
   subnet_id                            = aws_subnet.btsec-pov-subnet.id
   count                                = 3
   tags = {
-    Name       = "btsec-pov-control-plane-${count.index}"
+    Name       = "${var.cluster_name}-control-plane-${count.index}"
     expiration = "5d"
     Owner      = "@Dave Whitehouse"
   }
@@ -52,7 +52,7 @@ resource "aws_instance" "btsec-pov-control-plane" {
     volume_size           = 100
     volume_type           = "gp2"
     tags = {
-      "Name" = "btsec-pov-control-plane-${count.index}"
+      "Name" = "${var.cluster_name}-control-plane-${count.index}"
     }
   }
 }

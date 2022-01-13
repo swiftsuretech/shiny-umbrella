@@ -13,11 +13,6 @@ provider "aws" {
   region  = "us-west-2"
 }
 
-resource "null_resource" "btsec-refresh_creds" {
-  provisioner "local-exec" {
-    command = "eval $(maws li general-services)"
-  }
-}
 
 locals {
   bastion_l = aws_instance.btsec-pov-bastion-instance.private_ip

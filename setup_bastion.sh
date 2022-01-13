@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Install docker
+echo Installing Docker packages
 sudo yum install -y yum-utils
 sudo yum-config-manager \
     --add-repo \
@@ -11,12 +12,25 @@ sudo systemctl start docker
 sudo usermod -aG docker centos
 
 # Install kubectl
+echo Installing kubectl
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
 # Disable firewalld
-sudo systemctl stop firewalld
-sudo systemctl disable firewalld
+echo Disabling the firewall
+sudo systemctl stop firewalld > /dev/null 2>&1
+sudo systemctl disable firewalld > /dev/null 2>&1
+echo done
 
 # Disable swap
+echo Disabling swap
 swapoff -a
+
+# Get our packages
+echo Getting tarballs
+echo ....Getting airgapped bundle - This might take 5 mins
+mkdir ~/tarballs && cd ~/tarballs
+curl https://s3-us-gov-east-1.amazonaws.com/govcloud.downloads.d2iq.io/dkp/v2.1.1/dkp_airgapped_bundle_v2.1.1_linux_amd64.tar.gz --output airgapped_bundle.tar.gz
+# The konvoy image bundle is broken. Pull it in seperately
+echo ....Getting Konvoy bundle - This might take 5 mins
+curl https://downloads.d2iq.com/konvoy/airgapped/v2.1.1/konvoy_image_bundle_v2.1.1_linux_amd64.tar.gz --output konvoy_bundle.tar.gz

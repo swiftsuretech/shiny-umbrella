@@ -15,7 +15,7 @@ resource "aws_security_group" "btsec-pov-bastion-sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags = {
-    "Name" = "btsec-pov-bastion-sg"
+    "Name" = "${var.cluster_name}-bastion-sg"
   }
 }
 
@@ -38,6 +38,6 @@ resource "aws_security_group" "btset-pov-private-sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags = {
-    "Name" = "btsec-pov-internal-sg"
+    "Name" = "${var.cluster_name}-internal-sg"
   }
 }
