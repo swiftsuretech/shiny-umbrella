@@ -46,7 +46,7 @@ resource "aws_instance" "btsec-pov-worker-node" {
   }
 
   root_block_device {
-    delete_on_termination = false
+    delete_on_termination = true
     encrypted             = false
     throughput            = 0
     volume_size           = 100
