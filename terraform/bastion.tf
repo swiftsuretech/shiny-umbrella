@@ -61,7 +61,7 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
     connection {
       type        = "ssh"
       user        = "centos"
-      private_key = file("./keys/btsec_twin.pem")
+      private_key = file("${var.key}")
       host        = aws_instance.btsec-pov-bastion-instance.public_ip
     }
   }
@@ -72,7 +72,7 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
     connection {
       type        = "ssh"
       user        = "centos"
-      private_key = file("./keys/btsec_twin.pem")
+      private_key = file("${var.key}")
       host        = aws_instance.btsec-pov-bastion-instance.public_ip
     }
   }
@@ -88,7 +88,7 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
     connection {
       type        = "ssh"
       user        = "centos"
-      private_key = file("./keys/btsec_twin.pem")
+      private_key = file("${var.key}")
       host        = aws_instance.btsec-pov-bastion-instance.public_ip
     }
   }

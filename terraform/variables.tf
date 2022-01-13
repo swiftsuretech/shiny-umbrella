@@ -21,3 +21,9 @@ variable "cluster_name" {
   type        = string
   default     = "btsec-pov"
 }
+
+variable "key" {
+  description = "Private key for SSH access"
+  type        = string
+  default     = "../keys/btsec_twin.pem"
+}
