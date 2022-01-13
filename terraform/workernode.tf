@@ -7,7 +7,7 @@ resource "aws_instance" "btsec-pov-worker-node" {
   get_password_data                    = false
   hibernation                          = false
   instance_initiated_shutdown_behavior = "stop"
-  instance_type                        = "t2.xlarge"
+  instance_type                        = "t2.2xlarge"
   ipv6_address_count                   = 0
   ipv6_addresses                       = []
   key_name                             = "btsec_twin"

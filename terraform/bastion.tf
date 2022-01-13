@@ -56,7 +56,7 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
   }
 
   provisioner "file" {
-    source      = "./keys/btsec_twin.pem"
+    source      = "${var.key}"
     destination = "/home/centos/.ssh/btsec_twin.pem"
     connection {
       type        = "ssh"
@@ -67,7 +67,7 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
   }
 
   provisioner "file" {
-    source      = "./setup_bastion.sh"
+    source      = "../scripts/setup_bastion.sh"
     destination = "/home/centos/setup_bastion"
     connection {
       type        = "ssh"
