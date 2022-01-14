@@ -27,3 +27,9 @@ variable "key" {
   type        = string
   default     = "../keys/btsec_twin.pem"
 }
+
+variable "inventory" {
+  description = "The ansible inventory file location"
+  type = string
+  default = "/home/centos/ansible/inventory.yaml"
+}
