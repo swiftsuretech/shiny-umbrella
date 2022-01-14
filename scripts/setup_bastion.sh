@@ -28,6 +28,10 @@ echo done
 echo Disabling swap
 sudo /usr/sbin/swapoff -a
 
+# Set SELinux to permissive
+sudo setenforce 0
+sudo sed -i 's/enforcing/permisive/g' /etc/selinux/config
+
 # Get our packages
 echo Getting tarballs
 echo ....Getting airgapped bundle - This might take 5 mins
