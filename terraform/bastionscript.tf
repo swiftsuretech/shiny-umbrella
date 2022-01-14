@@ -51,6 +51,6 @@ cd /home/centos/ansible
 ansible-playbook -i inventory.yaml configure_hosts.yaml
 
 # Running initial setup
-/home/centos/dkp
+sudo /home/centos/dkp-v${var.dkpversion}/setup
 EOF
 }
