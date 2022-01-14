@@ -4,7 +4,7 @@
   become: yes
   tasks: 
   
-  - name: Execute a command using the shell module
+  - name: Set SELinux
     become: true
     shell: setenforce 0
   
