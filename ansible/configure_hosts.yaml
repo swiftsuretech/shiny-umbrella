@@ -1,26 +1,20 @@
 ---
-- hosts: registry
+- hosts: all
   gather_facts: no
   become: yes
   tasks: 
+  
+  - name: Execute a command using the shell module
+    become: true
+    shell: setenforce 0
+  
   - name: Disable SELinux
     ansible.posix.selinux:
       state: disabled
 
-  - name: Install yum utils
-    yum:
-      name:
-      - yum-utils
-
   - name: Ensure sysctl net.ipv4.ip_forward is set to 0
     sysctl:
       name: net.ipv4.ip_forward
-      value: 1
+      value: '1'
       state: present
       reload: yes
-
-  - name: Stop and disable firewalld.
-    service:
-       name: firewalld
-       state: stopped
-       enabled: False
