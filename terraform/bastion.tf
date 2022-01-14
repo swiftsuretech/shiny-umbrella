@@ -105,3 +105,4 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
       host        = aws_instance.btsec-pov-bastion-instance.public_ip
     }
   }
+}
