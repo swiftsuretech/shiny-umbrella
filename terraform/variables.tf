@@ -33,3 +33,9 @@ variable "inventory" {
   type        = string
   default     = "/home/centos/ansible/inventory.yaml"
 }
+
+variable "no-download" {
+  description = "Set to true to prevent downloading airgapped bundle"
+  type        = bool
+  default     = false
+}
