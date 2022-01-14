@@ -30,6 +30,6 @@ variable "key" {
 
 variable "inventory" {
   description = "The ansible inventory file location"
-  type = string
-  default = "/home/centos/ansible/inventory.yaml"
+  type        = string
+  default     = "/home/centos/ansible/inventory.yaml"
 }
