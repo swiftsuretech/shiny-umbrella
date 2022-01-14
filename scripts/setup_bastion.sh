@@ -7,7 +7,8 @@ sudo yum-config-manager \
     --add-repo \
     https://download.docker.com/linux/centos/docker-ce.repo
 
-sudo yum -y install docker-ce docker-ce-cli containerd.io python3 python3-pip epel-release ansible
+sudo yum -y install epel-release
+sudo yum -y install docker-ce docker-ce-cli containerd.io python3 python3-pip ansible
 sudo systemctl start docker
 sudo usermod -aG docker centos
 
