@@ -77,6 +77,17 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
     }
   }
 
+  provisioner "file" {
+    source      = "../ansible"
+    destination = "/home/centos/ansible"
+    connection {
+      type        = "ssh"
+      user        = "centos"
+      private_key = file("${var.key}")
+      host        = aws_instance.btsec-pov-bastion-instance.public_ip
+    }
+  }
+
   provisioner "remote-exec" {
     inline = [
       "chmod 400 /home/centos/.ssh/btsec_twin.pem",
@@ -87,17 +98,6 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
       "chmod +x /home/centos/scripts/setup_bastion",
       "/home/centos/scripts/setup_bastion",
     ]
-    connection {
-      type        = "ssh"
-      user        = "centos"
-      private_key = file("${var.key}")
-      host        = aws_instance.btsec-pov-bastion-instance.public_ip
-    }
-  }
-
-  provisioner "file" {
-    source      = "../ansible"
-    destination = "/home/centos/ansible"
     connection {
       type        = "ssh"
       user        = "centos"
