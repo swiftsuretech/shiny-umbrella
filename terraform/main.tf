@@ -13,7 +13,6 @@ provider "aws" {
   region  = "us-west-2"
 }
 
-
 locals {
   bastion_l = aws_instance.btsec-pov-bastion-instance.private_ip
   bastion_r = aws_instance.btsec-pov-bastion-instance.public_ip
