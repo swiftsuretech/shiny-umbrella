@@ -39,3 +39,9 @@ variable "no-download" {
   type        = bool
   default     = false
 }
+
+variable "dkpversion" {
+  description = "The version we wish to deploy"
+  type        = string
+  default     = "2.1.1"
+}
