@@ -11,6 +11,7 @@ sudo yum -y install epel-release
 sudo yum -y install docker-ce docker-ce-cli containerd.io python3 python3-pip epel-release ansible
 sudo systemctl start docker
 sudo usermod -aG docker centos
+ansible-galaxy collection install ansible.posix
 
 # Install kubectl
 echo Installing kubectl
@@ -38,4 +39,7 @@ echo ....Getting airgapped bundle - This might take 5 mins
 mkdir ~/tarballs && cd ~/tarballs
 curl https://s3-us-gov-east-1.amazonaws.com/govcloud.downloads.d2iq.io/dkp/v2.1.1/dkp_airgapped_bundle_v2.1.1_linux_amd64.tar.gz --output airgapped_bundle.tar.gz
 tar -xvf airgapped_bundle.tar.gz --directory ../
-# The konvoy image bundle is broken. Pull it in seperately
+
+# Set up the other nodes
+cd /home/centos/ansible
+ansible-playbook -i inentory.yaml configure_hosts.yaml
