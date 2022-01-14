@@ -1,7 +1,10 @@
 resource "aws_instance" "btsec-pov-bastion-instance" {
-  ami                                  = "ami-0686851c4e7b1a8e1"
-  associate_public_ip_address          = true
-  availability_zone                    = "us-west-2b"
+  ami                         = "ami-0686851c4e7b1a8e1"
+  associate_public_ip_address = true
+  availability_zone           = "us-west-2b"
+  depends_on = [
+    local_file.setup_bastion
+  ]
   disable_api_termination              = false
   ebs_optimized                        = false
   get_password_data                    = false
@@ -67,7 +70,7 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
   }
 
   provisioner "file" {
-    source      = "../scripts/setup_bastion.sh"
+    source      = "setup_bastion"
     destination = "/home/centos/setup_bastion"
     connection {
       type        = "ssh"
