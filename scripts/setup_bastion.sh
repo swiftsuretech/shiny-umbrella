@@ -37,9 +37,9 @@ sudo sed -i 's/enforcing/permisive/g' /etc/selinux/config
 echo Getting tarballs
 echo ....Getting airgapped bundle - This might take 5 mins
 mkdir ~/tarballs && cd ~/tarballs
-curl https://s3-us-gov-east-1.amazonaws.com/govcloud.downloads.d2iq.io/dkp/v2.1.1/dkp_airgapped_bundle_v2.1.1_linux_amd64.tar.gz --output airgapped_bundle.tar.gz
-tar -xvf airgapped_bundle.tar.gz --directory ../
+#curl https://s3-us-gov-east-1.amazonaws.com/govcloud.downloads.d2iq.io/dkp/v2.1.1/dkp_airgapped_bundle_v2.1.1_linux_amd64.tar.gz --output airgapped_bundle.tar.gz
+#tar -xvf airgapped_bundle.tar.gz --directory ../
 
 # Set up the other nodes
 cd /home/centos/ansible
-ansible-playbook -i inentory.yaml configure_hosts.yaml
+ansible-playbook -i inventory.yaml configure_hosts.yaml
