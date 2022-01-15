@@ -42,8 +42,8 @@ echo ....Getting airgapped bundle - This might take 5 mins
 mkdir ~/tarballs && cd ~/tarballs
 curl https://s3-us-gov-east-1.amazonaws.com/govcloud.downloads.d2iq.io/dkp/v2.1.1/dkp_airgapped_bundle_v${var.dkpversion}_linux_amd64.tar.gz --output airgapped_bundle.tar.gz
 tar -xvf airgapped_bundle.tar.gz --directory ../
-curl https://downloads.d2iq.com/kommander/airgapped/v2.1.1/kommander_image_bundle_v${var.dkpversion}_linux_amd64.tar --output /tmp/kommander_image_bundle_v${var.dkpversion}_linux_amd64.tar
-mv /tmp/kommander_image_bundle_v${var.dkpversion}_linux_amd64.tar /home/centos/dkp-v${var.dkpversion}/kommander_image_bundle_v${var.dkpversion}_linux_amd64.tar
+#curl https://downloads.d2iq.com/kommander/airgapped/v2.1.1/kommander_image_bundle_v${var.dkpversion}_linux_amd64.tar --output /tmp/kommander_image_bundle_v${var.dkpversion}_linux_amd64.tar
+#mv /tmp/kommander_image_bundle_v${var.dkpversion}_linux_amd64.tar /home/centos/dkp-v${var.dkpversion}/kommander_image_bundle_v${var.dkpversion}_linux_amd64.tar
 
 # Set up the other nodes
 echo Prepping cluster nodes
