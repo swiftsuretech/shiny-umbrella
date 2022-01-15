@@ -20,7 +20,7 @@ resource "aws_instance" "btsec-pov-control-plane" {
   tags = {
     Name       = "${var.cluster_name}-control-plane-${count.index}"
     expiration = "5d"
-    Owner      = "@Dave Whitehouse"
+    owner      = "@Dave Whitehouse"
   }
   tenancy = "default"
   vpc_security_group_ids = [

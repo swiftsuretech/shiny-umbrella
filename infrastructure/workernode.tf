@@ -20,7 +20,7 @@ resource "aws_instance" "btsec-pov-worker-node" {
   tags = {
     Name       = "${var.cluster_name}-worker-node-${count.index}"
     expiration = "5d"
-    Owner      = "@Dave Whitehouse"
+    owner      = "@Dave Whitehouse"
   }
   tenancy = "default"
   vpc_security_group_ids = [
