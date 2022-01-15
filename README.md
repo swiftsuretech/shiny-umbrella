@@ -12,8 +12,10 @@ Instructions:
 
 2.  Generate a keypair in the AWS console. This results in a download of the private key.
 
-3.  Copy the private key from downloads to keys/{your-key}.pem
+3.  Copy the private key from downloads to keys/{your-key}.pem. 
 
-4.  Ensure your AWS credentials are stored at the default ~/.aws/credentials.
+4.  Update infrastructure/variables.tf to point to your key.
 
-5.   Make the setup file in the root dir executable and run it.
+5.  Ensure your AWS credentials are stored at the default ~/.aws/credentials.
+
+6.   Make the setup file in the root dir executable and run it.
