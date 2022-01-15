@@ -25,13 +25,13 @@ variable "cluster_name" {
 variable "key" {
   description = "Private key for SSH access"
   type        = string
-  default     = "../keys/btsec_twin.pem"
+  default     = "../keys/btsec-pov-2.pem"
 }
 
 variable "inventory" {
-  description = "The ansible inventory file location"
+  description = "The owner inventory file location"
   type        = string
-  default     = "/home/centos/ansible/inventory.yaml"
+  default     = "/home/centos/inventory/inventory.yaml"
 }
 
 variable "no-download" {
