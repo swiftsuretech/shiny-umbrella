@@ -13,7 +13,7 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
   instance_type                        = "t2.xlarge"
   ipv6_address_count                   = 0
   ipv6_addresses                       = []
-  key_name                             = "btsec_twin"
+  key_name                             = trimprefix(trimsuffix(var.key, ".pem"), "../keys/")
   monitoring                           = false
   private_ip                           = "10.0.0.10"
   secondary_private_ips                = []
@@ -22,7 +22,7 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
   tags = {
     Name       = "${var.cluster_name}-bastion-node"
     expiration = "5d"
-    Owner      = "@Dave Whitehouse"
+    owner      = "@Dave Whitehouse"
   }
   tenancy = "default"
   vpc_security_group_ids = [
@@ -50,17 +50,19 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
   root_block_device {
     delete_on_termination = true
     encrypted             = false
-    throughput            = 0
-    volume_size           = 100
-    volume_type           = "gp2"
     tags = {
-      "Name" = "${var.cluster_name}-bastion"
+      Name       = "${var.cluster_name}-bastion-node"
+      expiration = "5d"
+      owner      = "@Dave Whitehouse"
     }
+    throughput  = 0
+    volume_size = 100
+    volume_type = "gp2"
   }
 
   provisioner "file" {
     source      = var.key
-    destination = "/home/centos/.ssh/btsec_twin.pem"
+    destination = "/home/centos/.ssh/${var.key}"
     connection {
       type        = "ssh"
       user        = "centos"
