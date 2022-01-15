@@ -2,7 +2,7 @@
 
 eval $(maws li general-services)
 alias t=terraform
-cd terraform
+cd infrastructure
 terraform fmt
 terraform validate
 terraform apply -auto-approve
