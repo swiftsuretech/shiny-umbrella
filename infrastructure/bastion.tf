@@ -20,7 +20,7 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
   source_dest_check                    = true
   subnet_id                            = aws_subnet.btsec-pov-subnet.id
   tags = {
-    Name       = "${var.cluster_name}-bastion-node"
+    name       = "${var.cluster_name}-bastion-node"
     expiration = "5d"
     owner      = "@Dave Whitehouse"
   }
@@ -83,8 +83,8 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
   }
 
   provisioner "file" {
-    source      = "../ansible"
-    destination = "/home/centos/ansible"
+    source      = "../configuration"
+    destination = "/home/centos/configuration"
     connection {
       type        = "ssh"
       user        = "centos"

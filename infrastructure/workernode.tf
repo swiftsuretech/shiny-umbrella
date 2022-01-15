@@ -18,7 +18,7 @@ resource "aws_instance" "btsec-pov-worker-node" {
   subnet_id                            = aws_subnet.btsec-pov-subnet.id
   count                                = 4
   tags = {
-    Name       = "${var.cluster_name}-worker-node-${count.index}"
+    name       = "${var.cluster_name}-worker-node-${count.index}"
     expiration = "5d"
     owner      = "@Dave Whitehouse"
   }

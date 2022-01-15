@@ -47,7 +47,7 @@ tar -xvf airgapped_bundle.tar.gz --directory ../
 
 # Set up the other nodes
 echo Prepping cluster nodes
-cd /home/centos/ansible
+cd /home/centos/configuration
 ansible-playbook -i inventory.yaml configure_hosts.yaml
 
 # Running initial setup

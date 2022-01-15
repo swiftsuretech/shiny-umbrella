@@ -1,0 +1,22 @@
+all:
+  vars:
+    ansible_user: centos
+    ansible_port: 22
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+    ansible_ssh_private_key_file: "../keys/btsec-pov-2.pem"
+    cluster_name: btsec-pov
+  hosts:
+    10.0.0.20:
+      node_pool: control
+    10.0.0.21:
+      node_pool: control
+    10.0.0.22:
+      node_pool: control
+    10.0.0.30:
+      node_pool: worker
+    10.0.0.31:
+      node_pool: worker
+    10.0.0.32:
+      node_pool: worker
+    10.0.0.33:
+      node_pool: worker

@@ -18,7 +18,7 @@ resource "aws_instance" "btsec-pov-control-plane" {
   subnet_id                            = aws_subnet.btsec-pov-subnet.id
   count                                = 3
   tags = {
-    Name       = "${var.cluster_name}-control-plane-${count.index}"
+    name       = "${var.cluster_name}-control-plane-${count.index}"
     expiration = "5d"
     owner      = "@Dave Whitehouse"
   }

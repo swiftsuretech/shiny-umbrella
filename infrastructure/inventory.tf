@@ -1,5 +1,5 @@
 resource "local_file" "ansible_inventory" {
-  filename = "../ansible/inventory.yaml"
+  filename = "../configuration/inventory.yaml"
   depends_on = [
     aws_instance.btsec-pov-control-plane,
     aws_instance.btsec-pov-worker-node
