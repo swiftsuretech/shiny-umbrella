@@ -10,16 +10,16 @@ The endstate is 8 x instances which meet the minimum spec for a bastion node, 3 
 
 Instructions:
 
-1.  Ensure that terraform and AWS CLI are installed on your local machine.
+* Ensure that terraform and AWS CLI are installed on your local machine.
 
-1.  Clone this repo.
+* Clone this repo.
 
-2.  Generate a keypair in the AWS console. This results in a download of the private key.
+* Generate a keypair in the AWS console. This results in a download of the private key.
 
-3.  Copy the private key from downloads to keys/{your-key}.pem. 
+* Copy the private key from downloads to keys/{your-key}.pem. 
 
-4.  Update infrastructure/variables.tf to point to your key.
+* Update infrastructure/variables.tf to point to your key.
 
-5.  Ensure your AWS credentials are stored at the default ~/.aws/credentials.
+* Ensure your AWS credentials are stored at the default ~/.aws/credentials.
 
-6.   Make the setup file in the root dir executable and run it.
+* Make the setup file in the root dir executable and run it.
