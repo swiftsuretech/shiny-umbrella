@@ -10,7 +10,7 @@ all:
     ansible_user: centos
     ansible_port: 22
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
-    ansible_ssh_private_key_file: "${var.key}"
+    ansible_ssh_private_key_file: "/home/centos/.ssh/${var.key}"
     cluster_name: ${var.cluster_name}
   hosts:
 %{for index, cp in aws_instance.btsec-pov-control-plane~}

@@ -10,7 +10,7 @@ resource "aws_instance" "btsec-pov-control-plane" {
   instance_type                        = "t2.xlarge"
   ipv6_address_count                   = 0
   ipv6_addresses                       = []
-  key_name                             = "btsec_twin"
+  key_name                             = trimsuffix(var.key, ".pem")
   monitoring                           = false
   private_ip                           = "10.0.0.2${count.index}"
   secondary_private_ips                = []
@@ -19,6 +19,7 @@ resource "aws_instance" "btsec-pov-control-plane" {
   count                                = 3
   tags = {
     name       = "${var.cluster_name}-control-plane-${count.index}"
+    Name       = "${var.cluster_name}-control-plane-${count.index}"
     expiration = "5d"
     owner      = "@Dave Whitehouse"
   }

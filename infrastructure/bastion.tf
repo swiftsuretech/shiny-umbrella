@@ -13,7 +13,7 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
   instance_type                        = "t2.xlarge"
   ipv6_address_count                   = 0
   ipv6_addresses                       = []
-  key_name                             = trimprefix(trimsuffix(var.key, ".pem"), "../keys/")
+  key_name                             = trimsuffix(var.key, ".pem")
   monitoring                           = false
   private_ip                           = "10.0.0.10"
   secondary_private_ips                = []
@@ -21,6 +21,7 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
   subnet_id                            = aws_subnet.btsec-pov-subnet.id
   tags = {
     name       = "${var.cluster_name}-bastion-node"
+    Name       = "${var.cluster_name}-bastion-node"
     expiration = "5d"
     owner      = "@Dave Whitehouse"
   }
@@ -77,7 +78,7 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
     connection {
       type        = "ssh"
       user        = "centos"
-      private_key = file("${var.key}")
+      private_key = file("../keys/${var.key}")
       host        = aws_instance.btsec-pov-bastion-instance.public_ip
     }
   }
@@ -88,15 +89,15 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
     connection {
       type        = "ssh"
       user        = "centos"
-      private_key = file("${var.key}")
+      private_key = file("../keys/${var.key}")
       host        = aws_instance.btsec-pov-bastion-instance.public_ip
     }
   }
 
   provisioner "remote-exec" {
     inline = [
-      "chmod 400 /home/centos/.ssh/btsec_twin.pem",
-      "echo IdentityFile /home/centos/.ssh/btsec_twin.pem > /home/centos/.ssh/config",
+      "chmod 400 /home/centos/.ssh/${var.key}",
+      "echo IdentityFile /home/centos/.ssh/${var.key} > /home/centos/.ssh/config",
       "chmod 600 /home/centos/.ssh/config",
       "mkdir scripts",
       "mv /home/centos/setup_bastion /home/centos/scripts/setup_bastion",
@@ -106,7 +107,7 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
     connection {
       type        = "ssh"
       user        = "centos"
-      private_key = file("${var.key}")
+      private_key = file("../keys/${var.key}")
       host        = aws_instance.btsec-pov-bastion-instance.public_ip
     }
   }

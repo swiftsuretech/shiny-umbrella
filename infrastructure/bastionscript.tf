@@ -49,8 +49,5 @@ tar -xvf airgapped_bundle.tar.gz --directory ../
 echo Prepping cluster nodes
 cd /home/centos/configuration
 ansible-playbook -i inventory.yaml configure_hosts.yaml
-
-# Running initial setup
-sudo /home/centos/dkp-v${var.dkpversion}/setup
 EOF
 }
