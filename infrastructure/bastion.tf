@@ -61,12 +61,12 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
   }
 
   provisioner "file" {
-    source      = var.key
+    source      = "../keys/${var.key}"
     destination = "/home/centos/.ssh/${var.key}"
     connection {
       type        = "ssh"
       user        = "centos"
-      private_key = file("${var.key}")
+      private_key = file("../keys/${var.key}")
       host        = aws_instance.btsec-pov-bastion-instance.public_ip
     }
   }
