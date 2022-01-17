@@ -1,0 +1,484 @@
+apiVersion: v1
+data:
+  mirror: IyBvdmVycmlkZSBhbGwgdGhlIG1pcnJvcnMgY29uZmlndXJhdGlvbgojIENvbnRhaW5lcmQgYXV0b21hdGljYWxseSBhcHBlbmRzIG1pcnJvcnMuImRvY2tlci5pbyIKIyBuZWVkIHRvIGV4cGxpY2l0bHkgb3ZlcnJpZGUgbWlycm9ycy4iZG9ja2VyLmlvIiB3aXRoIHRoZSBtaXJyb3IgdG8gcHVsbCBpbWFnZXMgZnJvbSBkb2NrZXJodWIKW3BsdWdpbnMuImlvLmNvbnRhaW5lcmQuZ3JwYy52MS5jcmkiLnJlZ2lzdHJ5Lm1pcnJvcnNdCiAgW3BsdWdpbnMuImlvLmNvbnRhaW5lcmQuZ3JwYy52MS5jcmkiLnJlZ2lzdHJ5Lm1pcnJvcnMuImRvY2tlci5pbyJdCiAgICBlbmRwb2ludCA9IFsiaHR0cDovLzEwLjAuMC4xMDo1MDAwIiwiaHR0cHM6Ly9yZWdpc3RyeS0xLmRvY2tlci5pbyJdCiAgW3BsdWdpbnMuImlvLmNvbnRhaW5lcmQuZ3JwYy52MS5jcmkiLnJlZ2lzdHJ5Lm1pcnJvcnMuIioiXQogICAgZW5kcG9pbnQgPSBbImh0dHA6Ly8xMC4wLjAuMTA6NTAwMCJd
+kind: Secret
+metadata:
+  labels:
+    cluster.x-k8s.io/cluster-name: cluster-sbx
+    clusterctl.cluster.x-k8s.io/move: ""
+  name: cluster-sbx-control-plane-containerd-configuration
+  namespace: default
+type: Opaque
+---
+apiVersion: cluster.x-k8s.io/v1alpha4
+kind: Cluster
+metadata:
+  labels:
+    konvoy.d2iq.io/cluster-name: cluster-sbx
+    konvoy.d2iq.io/cni: calico
+    konvoy.d2iq.io/csi: local-volume-provisioner
+    konvoy.d2iq.io/osHint: ""
+    konvoy.d2iq.io/provider: preprovisioned
+  name: cluster-sbx
+  namespace: default
+spec:
+  clusterNetwork:
+    pods:
+      cidrBlocks:
+      - 192.168.0.0/16
+    services:
+      cidrBlocks:
+      - 10.96.0.0/12
+  controlPlaneEndpoint:
+    host: ""
+    port: 0
+  controlPlaneRef:
+    apiVersion: controlplane.cluster.x-k8s.io/v1alpha4
+    kind: KubeadmControlPlane
+    name: cluster-sbx-control-plane
+    namespace: default
+  infrastructureRef:
+    apiVersion: infrastructure.cluster.konvoy.d2iq.io/v1alpha1
+    kind: PreprovisionedCluster
+    name: cluster-sbx
+    namespace: default
+---
+apiVersion: controlplane.cluster.x-k8s.io/v1alpha4
+kind: KubeadmControlPlane
+metadata:
+  name: cluster-sbx-control-plane
+  namespace: default
+spec:
+  kubeadmConfigSpec:
+    clusterConfiguration:
+      apiServer:
+        extraArgs:
+          audit-log-maxage: "30"
+          audit-log-maxbackup: "10"
+          audit-log-maxsize: "100"
+          audit-log-path: /var/log/audit/kube-apiserver-audit.log
+          audit-policy-file: /etc/kubernetes/audit-policy/apiserver-audit-policy.yaml
+          cloud-provider: ""
+        extraVolumes:
+        - hostPath: /etc/kubernetes/audit-policy/
+          mountPath: /etc/kubernetes/audit-policy/
+          name: audit-policy
+        - hostPath: /var/log/kubernetes/audit
+          mountPath: /var/log/audit/
+          name: audit-logs
+      controllerManager:
+        extraArgs:
+          cloud-provider: ""
+          flex-volume-plugin-dir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/
+      dns: {}
+      etcd: {}
+      networking: {}
+      scheduler: {}
+    files:
+    - content: |
+        # Taken from https://github.com/kubernetes/kubernetes/blob/master/cluster/gce/gci/configure-helper.sh
+        # Recommended in Kubernetes docs
+        apiVersion: audit.k8s.io/v1
+        kind: Policy
+        rules:
+          # The following requests were manually identified as high-volume and low-risk,
+          # so drop them.
+          - level: None
+            users: ["system:kube-proxy"]
+            verbs: ["watch"]
+            resources:
+              - group: "" # core
+                resources: ["endpoints", "services", "services/status"]
+          - level: None
+            # Ingress controller reads 'configmaps/ingress-uid' through the unsecured port.
+            # TODO(#46983): Change this to the ingress controller service account.
+            users: ["system:unsecured"]
+            namespaces: ["kube-system"]
+            verbs: ["get"]
+            resources:
+              - group: "" # core
+                resources: ["configmaps"]
+          - level: None
+            users: ["kubelet"] # legacy kubelet identity
+            verbs: ["get"]
+            resources:
+              - group: "" # core
+                resources: ["nodes", "nodes/status"]
+          - level: None
+            userGroups: ["system:nodes"]
+            verbs: ["get"]
+            resources:
+              - group: "" # core
+                resources: ["nodes", "nodes/status"]
+          - level: None
+            users:
+              - system:kube-controller-manager
+              - system:kube-scheduler
+              - system:serviceaccount:kube-system:endpoint-controller
+            verbs: ["get", "update"]
+            namespaces: ["kube-system"]
+            resources:
+              - group: "" # core
+                resources: ["endpoints"]
+          - level: None
+            users: ["system:apiserver"]
+            verbs: ["get"]
+            resources:
+              - group: "" # core
+                resources: ["namespaces", "namespaces/status", "namespaces/finalize"]
+          - level: None
+            users: ["cluster-autoscaler"]
+            verbs: ["get", "update"]
+            namespaces: ["kube-system"]
+            resources:
+              - group: "" # core
+                resources: ["configmaps", "endpoints"]
+          # Don't log HPA fetching metrics.
+          - level: None
+            users:
+              - system:kube-controller-manager
+            verbs: ["get", "list"]
+            resources:
+              - group: "metrics.k8s.io"
+          # Don't log these read-only URLs.
+          - level: None
+            nonResourceURLs:
+              - /healthz*
+              - /version
+              - /swagger*
+          # Don't log events requests.
+          - level: None
+            resources:
+              - group: "" # core
+                resources: ["events"]
+          # node and pod status calls from nodes are high-volume and can be large, don't log responses for expected updates from nodes
+          - level: Request
+            users: ["kubelet", "system:node-problem-detector", "system:serviceaccount:kube-system:node-problem-detector"]
+            verbs: ["update","patch"]
+            resources:
+              - group: "" # core
+                resources: ["nodes/status", "pods/status"]
+            omitStages:
+              - "RequestReceived"
+          - level: Request
+            userGroups: ["system:nodes"]
+            verbs: ["update","patch"]
+            resources:
+              - group: "" # core
+                resources: ["nodes/status", "pods/status"]
+            omitStages:
+              - "RequestReceived"
+          # deletecollection calls can be large, don't log responses for expected namespace deletions
+          - level: Request
+            users: ["system:serviceaccount:kube-system:namespace-controller"]
+            verbs: ["deletecollection"]
+            omitStages:
+              - "RequestReceived"
+          # Secrets, ConfigMaps, and TokenReviews can contain sensitive & binary data,
+          # so only log at the Metadata level.
+          - level: Metadata
+            resources:
+              - group: "" # core
+                resources: ["secrets", "configmaps"]
+              - group: authentication.k8s.io
+                resources: ["tokenreviews"]
+            omitStages:
+              - "RequestReceived"
+          # Get responses can be large; skip them.
+          - level: Request
+            verbs: ["get", "list", "watch"]
+            resources:
+              - group: "" # core
+              - group: "admissionregistration.k8s.io"
+              - group: "apiextensions.k8s.io"
+              - group: "apiregistration.k8s.io"
+              - group: "apps"
+              - group: "authentication.k8s.io"
+              - group: "authorization.k8s.io"
+              - group: "autoscaling"
+              - group: "batch"
+              - group: "certificates.k8s.io"
+              - group: "extensions"
+              - group: "metrics.k8s.io"
+              - group: "networking.k8s.io"
+              - group: "node.k8s.io"
+              - group: "policy"
+              - group: "rbac.authorization.k8s.io"
+              - group: "scheduling.k8s.io"
+              - group: "settings.k8s.io"
+              - group: "storage.k8s.io"
+            omitStages:
+              - "RequestReceived"
+          # Default level for known APIs
+          - level: RequestResponse
+            resources:
+              - group: "" # core
+              - group: "admissionregistration.k8s.io"
+              - group: "apiextensions.k8s.io"
+              - group: "apiregistration.k8s.io"
+              - group: "apps"
+              - group: "authentication.k8s.io"
+              - group: "authorization.k8s.io"
+              - group: "autoscaling"
+              - group: "batch"
+              - group: "certificates.k8s.io"
+              - group: "extensions"
+              - group: "metrics.k8s.io"
+              - group: "networking.k8s.io"
+              - group: "node.k8s.io"
+              - group: "policy"
+              - group: "rbac.authorization.k8s.io"
+              - group: "scheduling.k8s.io"
+              - group: "settings.k8s.io"
+              - group: "storage.k8s.io"
+            omitStages:
+              - "RequestReceived"
+          # Default level for all other requests.
+          - level: Metadata
+            omitStages:
+              - "RequestReceived"
+      path: /etc/kubernetes/audit-policy/apiserver-audit-policy.yaml
+      permissions: "0600"
+    - content: |
+        #!/bin/bash
+        # CAPI does not expose an API to modify KubeProxyConfiguration
+        # this is a workaround to use a script with preKubeadmCommand to modify the kubeadm config files
+        # https://github.com/kubernetes-sigs/cluster-api/issues/4512
+        for i in $(ls /run/kubeadm/ | grep 'kubeadm.yaml\|kubeadm-join-config.yaml'); do
+          cat <<EOF>> "/run/kubeadm//$i"
+        ---
+        kind: KubeProxyConfiguration
+        apiVersion: kubeproxy.config.k8s.io/v1alpha1
+        metricsBindAddress: "0.0.0.0:10249"
+        EOF
+        done
+      path: /run/kubeadm/konvoy-set-kube-proxy-configuration.sh
+      permissions: "0700"
+    - contentFrom:
+        secret:
+          key: mirror
+          name: cluster-sbx-control-plane-containerd-configuration
+      path: /etc/containerd/conf.d/konvoy-mirror.toml
+      permissions: "0644"
+    - content: |
+        [metrics]
+          address = "0.0.0.0:1338"
+          grpc_histogram = false
+      path: /etc/containerd/conf.d/konvoy-metrics.toml
+      permissions: "0644"
+    initConfiguration:
+      localAPIEndpoint: {}
+      nodeRegistration:
+        criSocket: /run/containerd/containerd.sock
+        kubeletExtraArgs:
+          cloud-provider: ""
+          volume-plugin-dir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/
+    joinConfiguration:
+      discovery: {}
+      nodeRegistration:
+        criSocket: /run/containerd/containerd.sock
+        kubeletExtraArgs:
+          cloud-provider: ""
+          volume-plugin-dir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/
+    preKubeadmCommands:
+    - systemctl daemon-reload
+    - systemctl restart containerd
+    - /run/kubeadm/konvoy-set-kube-proxy-configuration.sh
+    - autotune override sysctl:net.ipv4.ip_forward:1
+    - systemctl restart autotune
+  machineTemplate:
+    infrastructureRef:
+      apiVersion: infrastructure.cluster.konvoy.d2iq.io/v1alpha1
+      kind: PreprovisionedMachineTemplate
+      name: cluster-sbx-control-plane
+      namespace: default
+    metadata: {}
+  replicas: 3
+  rolloutStrategy:
+    rollingUpdate:
+      maxSurge: 1
+    type: RollingUpdate
+  version: v1.21.6
+---
+apiVersion: infrastructure.cluster.konvoy.d2iq.io/v1alpha1
+kind: PreprovisionedCluster
+metadata:
+  name: cluster-sbx
+  namespace: default
+spec:
+  controlPlaneEndpoint:
+    host: 10.0.0.40
+    port: 6443
+  virtualIP:
+    interface: eth0
+---
+apiVersion: infrastructure.cluster.konvoy.d2iq.io/v1alpha1
+kind: PreprovisionedMachineTemplate
+metadata:
+  name: cluster-sbx-control-plane
+  namespace: default
+spec:
+  template:
+    spec:
+      inventoryRef:
+        name: cluster-sbx-control-plane
+        namespace: default
+      overrideRef:
+        name: cluster-sbx-user-overrides
+---
+apiVersion: addons.cluster.x-k8s.io/v1alpha3
+kind: ClusterResourceSet
+metadata:
+  name: calico-installation-cluster-sbx
+  namespace: default
+spec:
+  clusterSelector:
+    matchLabels:
+      konvoy.d2iq.io/cluster-name: cluster-sbx
+      konvoy.d2iq.io/cni: calico
+      konvoy.d2iq.io/osHint: ""
+      konvoy.d2iq.io/provider: preprovisioned
+  resources:
+  - kind: ConfigMap
+    name: calico-cni-cluster-sbx
+  strategy: ApplyOnce
+---
+apiVersion: v1
+data:
+  custom-resources.yaml: |
+    # This section includes base Calico installation configuration.
+    # For more information, see: https://docs.projectcalico.org/reference/installation/api
+    apiVersion: operator.tigera.io/v1
+    kind: Installation
+    metadata:
+      name: default
+    spec:
+      # Configures Calico networking.
+      calicoNetwork:
+        # Note: The ipPools section cannot be modified post-install.
+        ipPools:
+        - blockSize: 26
+          cidr: 192.168.0.0/16
+          encapsulation: IPIP
+          natOutgoing: Enabled
+          nodeSelector: all()
+        bgp: Enabled
+kind: ConfigMap
+metadata:
+  name: calico-cni-cluster-sbx
+  namespace: default
+---
+apiVersion: cluster.x-k8s.io/v1alpha4
+kind: MachineDeployment
+metadata:
+  labels:
+    cluster.x-k8s.io/cluster-name: cluster-sbx
+  name: cluster-sbx-md-0
+  namespace: default
+spec:
+  clusterName: cluster-sbx
+  minReadySeconds: 0
+  progressDeadlineSeconds: 600
+  replicas: 4
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      cluster.x-k8s.io/cluster-name: cluster-sbx
+      cluster.x-k8s.io/deployment-name: cluster-sbx-md-0
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        cluster.x-k8s.io/cluster-name: cluster-sbx
+        cluster.x-k8s.io/deployment-name: cluster-sbx-md-0
+    spec:
+      bootstrap:
+        configRef:
+          apiVersion: bootstrap.cluster.x-k8s.io/v1alpha4
+          kind: KubeadmConfigTemplate
+          name: cluster-sbx-md-0
+      clusterName: cluster-sbx
+      infrastructureRef:
+        apiVersion: infrastructure.cluster.konvoy.d2iq.io/v1alpha1
+        kind: PreprovisionedMachineTemplate
+        name: cluster-sbx-md-0
+      version: v1.21.6
+---
+apiVersion: infrastructure.cluster.konvoy.d2iq.io/v1alpha1
+kind: PreprovisionedMachineTemplate
+metadata:
+  name: cluster-sbx-md-0
+  namespace: default
+spec:
+  template:
+    spec:
+      inventoryRef:
+        name: cluster-sbx-md-0
+        namespace: default
+      overrideRef:
+        name: cluster-sbx-user-overrides
+---
+apiVersion: bootstrap.cluster.x-k8s.io/v1alpha4
+kind: KubeadmConfigTemplate
+metadata:
+  name: cluster-sbx-md-0
+  namespace: default
+spec:
+  template:
+    spec:
+      files:
+      - content: |
+          #!/bin/bash
+          # CAPI does not expose an API to modify KubeProxyConfiguration
+          # this is a workaround to use a script with preKubeadmCommand to modify the kubeadm config files
+          # https://github.com/kubernetes-sigs/cluster-api/issues/4512
+          for i in $(ls /run/kubeadm/ | grep 'kubeadm.yaml\|kubeadm-join-config.yaml'); do
+            cat <<EOF>> "/run/kubeadm//$i"
+          ---
+          kind: KubeProxyConfiguration
+          apiVersion: kubeproxy.config.k8s.io/v1alpha1
+          metricsBindAddress: "0.0.0.0:10249"
+          EOF
+          done
+        path: /run/kubeadm/konvoy-set-kube-proxy-configuration.sh
+        permissions: "0700"
+      - contentFrom:
+          secret:
+            key: mirror
+            name: cluster-sbx-md-0-containerd-configuration
+        path: /etc/containerd/conf.d/konvoy-mirror.toml
+        permissions: "0644"
+      - content: |
+          [metrics]
+            address = "0.0.0.0:1338"
+            grpc_histogram = false
+        path: /etc/containerd/conf.d/konvoy-metrics.toml
+        permissions: "0644"
+      joinConfiguration:
+        nodeRegistration:
+          criSocket: /run/containerd/containerd.sock
+          kubeletExtraArgs:
+            cloud-provider: ""
+            volume-plugin-dir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/
+      preKubeadmCommands:
+      - systemctl daemon-reload
+      - systemctl restart containerd
+      - /run/kubeadm/konvoy-set-kube-proxy-configuration.sh
+      - autotune override sysctl:net.ipv4.ip_forward:1
+      - systemctl restart autotune
+---
+apiVersion: v1
+data:
+  mirror: IyBvdmVycmlkZSBhbGwgdGhlIG1pcnJvcnMgY29uZmlndXJhdGlvbgojIENvbnRhaW5lcmQgYXV0b21hdGljYWxseSBhcHBlbmRzIG1pcnJvcnMuImRvY2tlci5pbyIKIyBuZWVkIHRvIGV4cGxpY2l0bHkgb3ZlcnJpZGUgbWlycm9ycy4iZG9ja2VyLmlvIiB3aXRoIHRoZSBtaXJyb3IgdG8gcHVsbCBpbWFnZXMgZnJvbSBkb2NrZXJodWIKW3BsdWdpbnMuImlvLmNvbnRhaW5lcmQuZ3JwYy52MS5jcmkiLnJlZ2lzdHJ5Lm1pcnJvcnNdCiAgW3BsdWdpbnMuImlvLmNvbnRhaW5lcmQuZ3JwYy52MS5jcmkiLnJlZ2lzdHJ5Lm1pcnJvcnMuImRvY2tlci5pbyJdCiAgICBlbmRwb2ludCA9IFsiaHR0cDovLzEwLjAuMC4xMDo1MDAwIiwiaHR0cHM6Ly9yZWdpc3RyeS0xLmRvY2tlci5pbyJdCiAgW3BsdWdpbnMuImlvLmNvbnRhaW5lcmQuZ3JwYy52MS5jcmkiLnJlZ2lzdHJ5Lm1pcnJvcnMuIioiXQogICAgZW5kcG9pbnQgPSBbImh0dHA6Ly8xMC4wLjAuMTA6NTAwMCJd
+kind: Secret
+metadata:
+  labels:
+    cluster.x-k8s.io/cluster-name: cluster-sbx
+    clusterctl.cluster.x-k8s.io/move: ""
+  name: cluster-sbx-md-0-containerd-configuration
+  namespace: default
+type: Opaque
