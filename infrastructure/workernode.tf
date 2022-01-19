@@ -1,12 +1,12 @@
 resource "aws_instance" "btsec-pov-worker-node" {
-  ami                                  = "ami-0686851c4e7b1a8e1"
-  associate_public_ip_address          = false
-  availability_zone                    = "us-west-2b"
-  disable_api_termination              = false
-  ebs_optimized                        = false
-  get_password_data                    = false
-  hibernation                          = false
-  iam_instance_profile                 = "${var.cluster_name}-iam-profile"
+  ami                         = "ami-0686851c4e7b1a8e1"
+  associate_public_ip_address = false
+  availability_zone           = "us-west-2b"
+  disable_api_termination     = false
+  ebs_optimized               = false
+  get_password_data           = false
+  hibernation                 = false
+  #iam_instance_profile                 = "AWSIAMInstanceProfileNodes"
   instance_initiated_shutdown_behavior = "stop"
   instance_type                        = "t2.2xlarge"
   ipv6_address_count                   = 0

@@ -1,3 +1,4 @@
+/*
 resource "aws_iam_role" "btsec_role" {
   name        = "${var.cluster_name}-role"
   description = "BT POV role for twin airgapped env't"
@@ -89,3 +90,4 @@ resource "aws_iam_instance_profile" "btsec_iam_profile" {
   name = "${var.cluster_name}-iam-profile"
   role = aws_iam_role.btsec_role.id
 }
+*/
