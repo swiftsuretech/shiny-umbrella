@@ -22,3 +22,27 @@
   - name: Set local persistent storage
     ansible.builtin.script:
       cmd: local_storage.sh
+
+  - name: Copy over the cluster-pp script
+    ansible.builtin.copy:
+      src: cluster-pp.sh
+      dest: /tmp/cluster-pp.sh
+      owner: centos
+      group: centos
+      mode: '0764'
+
+  - name: Copy over the cluster definition
+    ansible.builtin.copy:
+      src: cluster-sbx.yaml
+      dest: /tmp/cluster-sbx.yaml
+      owner: centos
+      group: centos
+      mode: '0664'
+
+  - name: Copy over the metallb config
+    ansible.builtin.copy:
+      src: mlb.yaml
+      dest: /tmp/mlb.yaml
+      owner: centos
+      group: centos
+      mode: '0664'
