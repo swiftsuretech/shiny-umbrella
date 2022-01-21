@@ -18,12 +18,20 @@ resource "aws_instance" "btsec-pov-worker-node" {
   source_dest_check                    = true
   subnet_id                            = aws_subnet.btsec-pov-subnet.id
   count                                = 4
-  tags = {
-    name       = "${var.cluster_name}-worker-node-${count.index}"
-    Name       = "${var.cluster_name}-worker-node-${count.index}"
-    expiration = "5d"
-    owner      = "@Dave Whitehouse"
-  }
+
+  tags = (merge(
+    var.tags,
+    tomap({
+      "Name" : "${var.cluster_name}-worker-node-${count.index}",
+      "konvoy/nodeRoles" : "worker_node",
+      "kubernetes.io/cluster/${var.cluster_name}" : "owned",
+      "kubernetes.io/cluster" : "${var.cluster_name}",
+      "expiration" = "5d",
+      "owner"      = "@Dave Whitehouse"
+      }
+    )
+  ))
+
   tenancy = "default"
   vpc_security_group_ids = [
     aws_security_group.btset-pov-private-sg.id

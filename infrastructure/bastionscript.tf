@@ -51,13 +51,13 @@ ansible-playbook -i inventory.yaml configure_hosts.yaml
 # Running initial setup
 cd /home/centos/dkp-v${var.dkpversion}
 sleep 10
-sudo ./setup
+#sudo ./setup
 cd kib
 cp /home/centos/configuration/inventory.yaml /home/centos/dkp-v${var.dkpversion}
 source <(ssh-agent)
 ssh-add /home/centos/.ssh/*.pem
-./konvoy-image provision --inventory-file inventory.yaml --overrides overrides-bundles.yaml
-cd ..
+#./konvoy-image provision --inventory-file inventory.yaml --overrides overrides-bundles.yaml
+#cd ..
 
 EOF
 }

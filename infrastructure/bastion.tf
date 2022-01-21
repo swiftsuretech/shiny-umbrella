@@ -5,11 +5,11 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
   depends_on = [
     local_file.setup_bastion
   ]
-  disable_api_termination              = false
-  ebs_optimized                        = false
-  get_password_data                    = false
-  hibernation                          = false
-  iam_instance_profile                 = "${var.cluster_name}-iam-profile"
+  disable_api_termination = false
+  ebs_optimized           = false
+  get_password_data       = false
+  hibernation             = false
+  #iam_instance_profile                 = "${var.cluster_name}-iam-profile"
   instance_initiated_shutdown_behavior = "stop"
   instance_type                        = "t2.xlarge"
   ipv6_address_count                   = 0

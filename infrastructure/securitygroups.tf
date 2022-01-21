@@ -37,7 +37,13 @@ resource "aws_security_group" "btset-pov-private-sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  tags = {
-    "Name" = "${var.cluster_name}-internal-sg"
-  }
+  tags = (merge(
+    var.tags,
+    tomap({
+      "Name" : "${var.cluster_name}-sg-private",
+      "kubernetes.io/cluster/${var.cluster_name}" : "owned",
+      "kubernetes.io/cluster" : "${var.cluster_name}"
+      }
+    )
+  ))
 }

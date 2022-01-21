@@ -45,3 +45,9 @@ variable "dkpversion" {
   type        = string
   default     = "2.1.1"
 }
+
+variable "tags" {
+  description = "Map of tags to add to all resources"
+  type        = map(any)
+  default     = {}
+}

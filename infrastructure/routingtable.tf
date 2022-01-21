@@ -8,7 +8,13 @@ resource "aws_route_table" "btsec-pov-public-rt" {
   lifecycle {
     ignore_changes = [route, tags]
   }
-  tags = {
-    "Name" = "${var.cluster_name}-rt"
-  }
+  tags = (merge(
+    var.tags,
+    tomap({
+      "Name" : "${var.cluster_name}-routetable",
+      "kubernetes.io/cluster/${var.cluster_name}" : "owned",
+      "kubernetes.io/cluster" : "${var.cluster_name}"
+      }
+    )
+  ))
 }
