@@ -51,13 +51,22 @@ ansible-playbook -i inventory.yaml configure_hosts.yaml
 # Running initial setup
 cd /home/centos/dkp-v${var.dkpversion}
 sleep 10
-#sudo ./setup
+sudo ./setup
 cd kib
 cp /home/centos/configuration/inventory.yaml /home/centos/dkp-v${var.dkpversion}
 source <(ssh-agent)
 ssh-add /home/centos/.ssh/*.pem
-#./konvoy-image provision --inventory-file inventory.yaml --overrides overrides-bundles.yaml
-#cd ..
+
+# Build our Image
+cp /home/centos/coniguration/inventory.yaml /home/centos/dkp-v${var.dkpversion}/kib/inventory.yaml
+./konvoy-image provision --inventory-file inventory.yaml --overrides overrides-bundles.yaml
+cd ..
+
+# Spin up the bootstrap
+cp /home/centos/configuration/cluster-pp.sh /home/centos/dkp-v${var.dkpversion}/cluster-pp.sh
+./cluster-pp.sh
+cp /home/centos/configuration/cluster-sbx.yaml /home/centos/dkp-v${var.dkpversion}/cluster--sbx.yaml
+kubectl apply -f cluster-sbx.yaml
 
 EOF
 }
