@@ -51,14 +51,16 @@ ansible-playbook -i inventory.yaml configure_hosts.yaml
 # Running initial setup
 cd /home/centos/dkp-v${var.dkpversion}
 sleep 10
+echo Building the registry
 sudo ./setup
+newgrp docker
 cd kib
 cp /home/centos/configuration/inventory.yaml /home/centos/dkp-v${var.dkpversion}
 source <(ssh-agent)
 ssh-add /home/centos/.ssh/*.pem
 
 # Build our Image
-cp /home/centos/coniguration/inventory.yaml /home/centos/dkp-v${var.dkpversion}/kib/inventory.yaml
+cp /home/centos/configuration/inventory.yaml /home/centos/dkp-v${var.dkpversion}/kib/inventory.yaml
 ./konvoy-image provision --inventory-file inventory.yaml --overrides overrides-bundles.yaml
 cd ..
 
@@ -67,6 +69,7 @@ cp /home/centos/.ssh/${var.key} /home/centos/dkp-v${var.dkpversion}/$var.key
 cp /home/centos/configuration/cluster-pp.sh /home/centos/dkp-v${var.dkpversion}/cluster-pp.sh
 echo Spinning up the bootstrap node
 ./cluster-pp.sh
+newgrp docker
 
 # Create the konvoy cluster
 echo spinning up the konvoy cluster
@@ -94,6 +97,7 @@ done
 # Shifting bootstrap controller to the cluster
 echo Moving bootstrap controllers to the cluster
 ./dkp create bootstrap controllers --with-aws-bootstrap-credentials=false --kubeconfig admin.conf
+echo Konvoy Installation Complete
 
 ###################################################
 ############### Konvoy Deployed ###################
