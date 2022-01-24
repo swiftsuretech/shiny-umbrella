@@ -63,10 +63,45 @@ cp /home/centos/coniguration/inventory.yaml /home/centos/dkp-v${var.dkpversion}/
 cd ..
 
 # Spin up the bootstrap
+cp /home/centos/.ssh/${var.key} /home/centos/dkp-v${var.dkpversion}/$var.key
 cp /home/centos/configuration/cluster-pp.sh /home/centos/dkp-v${var.dkpversion}/cluster-pp.sh
+echo Spinning up the bootstrap node
 ./cluster-pp.sh
-cp /home/centos/configuration/cluster-sbx.yaml /home/centos/dkp-v${var.dkpversion}/cluster--sbx.yaml
+
+# Create the konvoy cluster
+echo spinning up the konvoy cluster
+cp /home/centos/configuration/cluster-sbx.yaml /home/centos/dkp-v${var.dkpversion}/cluster-sbx.yaml
 kubectl apply -f cluster-sbx.yaml
+
+# Wait for boostrap CP
+echo Waiting for our Bootstrap Control Plane to come online
+while [ $(k get nodes | grep Ready | wc -l) -ne 0 ]; do
+  echo Waiting for Bootstrap Control Plane
+  sleep 10
+done
+
+# Snag the new kubeconfig 
+echo Bootstrap control plane is live, getting our kubeconfig
+./dkp get kubeconfig -c cluster-sbx > admin.conf
+
+# Check our konvoy nodes
+echo Waiting for all nodes to come up
+while [ $(kubectl --kubeconfig=admin.conf get nodes | grep Ready | wc -l) -lt 7 ]; do
+  echo Waiting for all nodes to come up. Currently $(kubectl --kubeconfig=admin.conf get nodes | grep Ready | wc -l) of 7.
+  sleep 10
+done
+
+# Shifting bootstrap controller to the cluster
+echo Moving bootstrap controllers to the cluster
+./dkp create bootstrap controllers --with-aws-bootstrap-credentials=false --kubeconfig admin.conf
+
+###################################################
+############### Konvoy Deployed ###################
+###################################################
+
+
+
+
 
 EOF
 }
