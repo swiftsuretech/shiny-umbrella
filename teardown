@@ -1,0 +1,6 @@
+#!/bin/bash
+
+eval $(maws li general-services)
+alias t=terraform
+cd infrastructure
+terraform destroy -auto-approve
