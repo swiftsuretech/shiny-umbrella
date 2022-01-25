@@ -103,9 +103,25 @@ echo Konvoy Installation Complete
 ############### Konvoy Deployed ###################
 ###################################################
 
+# Deploy Kommander
 echo Starting to Deploy Kommander
 ./kommander install --init > values.yaml
 cp /home/centos/configuration/values.yaml /home/centos/dkp-v${var.dkpversion}/values.yaml
 ./kommander install --kubeconfig admin.conf --kommander-applications-repository kommander-applications-v2.1.1 --installer-config values.yaml
+cp /home/centos/configuration/mlb.yaml /home/centos/dkp-v${var.dkpversion}/mlb.yaml
+
+# Deploy MLB
+echo Applying Metallb config
+kubectl --kubeconfig admin.conf apply -n kommander -f mlb.yaml
+kubectl --kubeconfig admin.conf  -n kommander delete pod -l app=metallb,component=controller
+
+# Wait for all apps ready
+echo Waiting for all applications to become ready
+kubectl --kubeconfig admin.conf -n kommander wait --for condition=Released helmreleases --all --timeout 15m
+
+# Get Login and Creds
+kubectl --kubeconfig admin.conf -n kommander get svc kommander-traefik -o go-template='https://{{with index .status.loadBalancer.ingress 0}}{{or .hostname .ip}}{{end}}/dkp/kommander/dashboard{{ "\n"}}'
+kubectl --kubeconfig admin.conf -n kommander get secret dkp-credentials -o go-template='Username: {{.data.username|base64decode}}{{ "\n"}}Password: {{.data.password|base64decode}}{{ "\n"}}'
+
 EOF
 }
