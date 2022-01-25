@@ -10,7 +10,7 @@ data:
       - name: default
         protocol: layer2
         addresses:
-        - 10.0.50.25-10.0.50.50
+        - 10.0.0.40-10.0.0.40
 ---
 apiVersion: apps.kommander.d2iq.io/v1alpha2
 kind: AppDeployment
