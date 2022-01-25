@@ -8,7 +8,7 @@ resource "aws_security_group" "btsec-pov-bastion-sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-    ingress {
+  ingress {
     from_port   = 5000
     to_port     = 5000
     protocol    = "tcp"
