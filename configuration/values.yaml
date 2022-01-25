@@ -231,7 +231,11 @@ apps:
   prometheus-thanos-traefik: null
   reloader: null
   thanos: null
-  traefik: null
+  traefik:
+    values: |
+      service:
+        annotations:
+          service.beta.kubernetes.io/aws-load-balancer-internal: "true"
   traefik-forward-auth-mgmt: null
   velero: null
 ageEncryptionSecretName: sops-age
