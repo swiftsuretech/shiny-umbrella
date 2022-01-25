@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: nodes
   gather_facts: no
   become: yes
   tasks: 
@@ -46,3 +46,15 @@
       owner: centos
       group: centos
       mode: '0664'
+
+- hosts: local
+  gather_facts: no
+  become: yes
+  tasks: 
+  
+  - name: adding centos user to the docker group
+    user:
+      name: centos
+      groups: docker
+      append: yes
+    

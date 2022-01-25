@@ -53,7 +53,6 @@ cd /home/centos/dkp-v${var.dkpversion}
 sleep 10
 echo Building the registry
 sudo ./setup
-newgrp docker
 cd /home/centos/dkp-v${var.dkpversion}/kib
 cp /home/centos/configuration/inventory.yaml /home/centos/dkp-v${var.dkpversion}/kib/inventory.yaml
 source <(ssh-agent)
@@ -71,7 +70,6 @@ cp /home/centos/configuration/cluster-pp.sh /home/centos/dkp-v${var.dkpversion}/
 echo Spinning up the bootstrap node
 cd /home/centos/dkp-v${var.dkpversion}
 ./cluster-pp.sh
-newgrp docker
 
 # Create the konvoy cluster
 echo spinning up the konvoy cluster
