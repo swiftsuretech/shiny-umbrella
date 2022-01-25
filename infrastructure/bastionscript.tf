@@ -54,9 +54,10 @@ sleep 10
 echo Building the registry
 sudo ./setup
 newgrp docker
-cd kib
-cp /home/centos/configuration/inventory.yaml /home/centos/dkp-v${var.dkpversion}
+cd /home/centos/dkp-v${var.dkpversion}/kib
+cp /home/centos/configuration/inventory.yaml /home/centos/dkp-v${var.dkpversion}/kib/inventory.yaml
 source <(ssh-agent)
+cp /home/centos/.ssh/${var.key} /home/centos/dkp-v${var.dkpversion}/${var.key}
 ssh-add /home/centos/.ssh/*.pem
 
 # Build our Image
@@ -65,9 +66,10 @@ cp /home/centos/configuration/inventory.yaml /home/centos/dkp-v${var.dkpversion}
 cd ..
 
 # Spin up the bootstrap
-cp /home/centos/.ssh/${var.key} /home/centos/dkp-v${var.dkpversion}/$var.key
+cp /home/centos/.ssh/${var.key} /home/centos/dkp-v${var.dkpversion}/${var.key}
 cp /home/centos/configuration/cluster-pp.sh /home/centos/dkp-v${var.dkpversion}/cluster-pp.sh
 echo Spinning up the bootstrap node
+cd /home/centos/dkp-v${var.dkpversion}
 ./cluster-pp.sh
 newgrp docker
 
@@ -78,7 +80,7 @@ kubectl apply -f cluster-sbx.yaml
 
 # Wait for boostrap CP
 echo Waiting for our Bootstrap Control Plane to come online
-while [ $(k get nodes | grep Ready | wc -l) -ne 1 ]; do
+while [ $(kubectl get machine | grep Provisioned | wc -l) -lt 1 ]; do
   echo Waiting for Bootstrap Control Plane
   sleep 10
 done
@@ -116,12 +118,17 @@ kubectl --kubeconfig admin.conf apply -n kommander -f mlb.yaml
 kubectl --kubeconfig admin.conf  -n kommander delete pod -l app=metallb,component=controller
 
 # Wait for all apps ready
-echo Waiting for all applications to become ready
+echo Waiting for all applications to become ready. This should take 15 mins plus. If it craps out, run this command again:
+echo - kubectl --kubeconfig admin.conf -n kommander wait --for condition=Released helmreleases --all --timeout 15m
+sleep 30
 kubectl --kubeconfig admin.conf -n kommander wait --for condition=Released helmreleases --all --timeout 15m
 
 # Get Login and Creds
-kubectl --kubeconfig admin.conf -n kommander get svc kommander-traefik -o go-template='https://{{with index .status.loadBalancer.ingress 0}}{{or .hostname .ip}}{{end}}/dkp/kommander/dashboard{{ "\n"}}'
-kubectl --kubeconfig admin.conf -n kommander get secret dkp-credentials -o go-template='Username: {{.data.username|base64decode}}{{ "\n"}}Password: {{.data.password|base64decode}}{{ "\n"}}'
+URL=$(kubectl --kubeconfig admin.conf -n kommander get svc kommander-traefik -o go-template='https://{{with index .status.loadBalancer.ingress 0}}{{or .hostname .ip}}{{end}}/dkp/kommander/dashboard{{ "\n"}}')
+CREDS=$(kubectl --kubeconfig admin.conf -n kommander get secret dkp-credentials -o go-template='Username: {{.data.username|base64decode}}{{ "\n"}}Password: {{.data.password|base64decode}}{{ "\n"}}')
+
+echo $URL
+echo $CREDS
 
 EOF
 }
