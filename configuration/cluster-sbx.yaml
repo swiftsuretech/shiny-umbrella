@@ -468,8 +468,8 @@ spec:
       - systemctl daemon-reload
       - systemctl restart containerd
       - /run/kubeadm/konvoy-set-kube-proxy-configuration.sh
-      - autotune override sysctl:net.ipv4.ip_forward:1
-      - systemctl restart autotune
+      #- autotune override sysctl:net.ipv4.ip_forward:1
+      #- systemctl restart autotune
 ---
 apiVersion: v1
 data:
