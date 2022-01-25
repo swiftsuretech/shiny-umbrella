@@ -78,7 +78,7 @@ kubectl apply -f cluster-sbx.yaml
 
 # Wait for boostrap CP
 echo Waiting for our Bootstrap Control Plane to come online
-while [ $(k get nodes | grep Ready | wc -l) -ne 0 ]; do
+while [ $(k get nodes | grep Ready | wc -l) -ne 1 ]; do
   echo Waiting for Bootstrap Control Plane
   sleep 10
 done
@@ -103,9 +103,9 @@ echo Konvoy Installation Complete
 ############### Konvoy Deployed ###################
 ###################################################
 
-
-
-
-
+echo Starting to Deploy Kommander
+./kommander install --init > values.yaml
+cp /home/centos/configuration/values.yaml /home/centos/dkp-v${var.dkpversion}/values.yaml
+./kommander install --kubeconfig admin.conf --kommander-applications-repository kommander-applications-v2.1.1 --installer-config values.yaml
 EOF
 }
