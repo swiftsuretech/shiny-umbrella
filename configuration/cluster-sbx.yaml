@@ -284,8 +284,8 @@ spec:
     - systemctl daemon-reload
     - systemctl restart containerd
     - /run/kubeadm/konvoy-set-kube-proxy-configuration.sh
-    - autotune override sysctl:net.ipv4.ip_forward:1
-    - systemctl restart autotune
+    #- autotune override sysctl:net.ipv4.ip_forward:1
+    #- systemctl restart autotune
   machineTemplate:
     infrastructureRef:
       apiVersion: infrastructure.cluster.konvoy.d2iq.io/v1alpha1
@@ -307,7 +307,7 @@ metadata:
   namespace: default
 spec:
   controlPlaneEndpoint:
-    host: 10.0.0.40
+    host: 10.0.0.20
     port: 6443
   virtualIP:
     interface: eth0
