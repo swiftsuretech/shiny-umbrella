@@ -6,3 +6,8 @@ resource "aws_vpc" "btsec-pov-vpc" {
     "Name" = "btsec-vpc"
   }
 }
+
+resource "aws_vpc_ipv4_cidr_block_association" "secondary_cidr" {
+  vpc_id     = aws_vpc.btsec-pov-vpc.id
+  cidr_block = "10.10.0.0/16"
+}
