@@ -103,7 +103,20 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
       "mkdir scripts",
       "mv /home/centos/setup_bastion /home/centos/scripts/setup_bastion",
       "chmod +x /home/centos/scripts/setup_bastion",
-      "/home/centos/scripts/setup_bastion",
+      "sudo groupadd docker",
+      "sudo usermod -aG docker centos"
+    ]
+    connection {
+      type        = "ssh"
+      user        = "centos"
+      private_key = file("../keys/${var.key}")
+      host        = aws_instance.btsec-pov-bastion-instance.public_ip
+    }
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "/home/centos/scripts/setup_bastion"
     ]
     connection {
       type        = "ssh"
