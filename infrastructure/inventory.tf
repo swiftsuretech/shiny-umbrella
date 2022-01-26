@@ -5,7 +5,7 @@ resource "local_file" "ansible_inventory" {
     aws_instance.btsec-pov-worker-node
   ]
   content = <<EOF
-all:
+nodes:
   vars:
     ansible_user: centos
     ansible_port: 22
@@ -21,5 +21,9 @@ all:
     ${wk.private_ip}:
       node_pool: worker
 %{endfor~}
+
+local:
+  hosts:
+    localhost:
 EOF
 }
