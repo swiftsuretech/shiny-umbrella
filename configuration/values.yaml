@@ -237,7 +237,12 @@ apps:
         annotations:
           service.beta.kubernetes.io/aws-load-balancer-internal: "true"
   traefik-forward-auth-mgmt: null
-  velero: null
+  velero:
+    values: |
+      minioBackendConfiguration:
+        service:
+          annotations:
+            "service.beta.kubernetes.io/aws-load-balancer-internal": "true"
 ageEncryptionSecretName: sops-age
 clusterHostname: ""
 appManagementImageTag: v2.1.1-amd64
