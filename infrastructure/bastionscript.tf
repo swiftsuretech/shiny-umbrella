@@ -99,7 +99,7 @@ info "Bootstrap control plane is live, getting our kubeconfig..."
 # Check our konvoy nodes
 info "Waiting for all nodes to come up"
 while [ $(kubectl --kubeconfig=admin.conf get nodes | grep Ready | wc -l) -lt 7 ]; do
-  info red "Waiting for all nodes to come up. Currently $(kubectl --kubeconfig=admin.conf get nodes | grep Ready | wc -l) of 7."
+  info "Waiting for all nodes to come up. Currently $(kubectl --kubeconfig=admin.conf get nodes | grep Ready | wc -l) of 7."
   sleep 30
 done
 
