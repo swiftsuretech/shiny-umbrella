@@ -48,7 +48,7 @@ ansible-playbook -i inventory.yaml configure_hosts.yaml
 
 # Get our packages
 info "Getting tarballs"
-info "....Getting airgapped bundle - This might take up to 30 mins"
+info "Getting airgapped bundle - This might take up to 30 mins"
 cd /home/centos/
 mkdir ~/tarballs && cd ~/tarballs
 curl https://s3-us-gov-east-1.amazonaws.com/govcloud.downloads.d2iq.io/dkp/v2.1.1/dkp_airgapped_bundle_v${var.dkpversion}_linux_amd64.tar.gz --output airgapped_bundle.tar.gz
@@ -108,9 +108,11 @@ info "Moving bootstrap controllers to the cluster"
 ./dkp create bootstrap controllers --with-aws-bootstrap-credentials=false --kubeconfig admin.conf
 info "Konvoy Installation Complete"
 
-###################################################
+info "###################################################
 ############### Konvoy Deployed ###################
-###################################################
+###################################################"
+
+exit 0
 
 # Deploy Kommander
 info "Starting to Deploy Kommander"
