@@ -87,6 +87,7 @@ kubectl apply -f cluster-sbx.yaml
 
 # Wait for boostrap CP
 info "Waiting for our Bootstrap Control Plane to come online"
+sleep 15
 while [ $(kubectl get machine | grep Running | wc -l) -lt 1 ]; do
   info "Waiting for Bootstrap Control Plane"
   sleep 30
