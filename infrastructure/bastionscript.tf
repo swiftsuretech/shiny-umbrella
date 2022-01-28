@@ -126,11 +126,6 @@ info "Starting to Deploy Kommander"
 cp /home/centos/configuration/values.yaml /home/centos/dkp-v${var.dkpversion}/values.yaml
 ./kommander install --kubeconfig admin.conf --kommander-applications-repository kommander-applications-v2.1.1 --installer-config values.yaml
 
-# Deploy MLB
-#cp /home/centos/configuration/mlb.yaml /home/centos/dkp-v${var.dkpversion}/mlb.yaml
-#info "Applying Metallb config"
-#kubectl --kubeconfig admin.conf apply -n kommander -f mlb.yaml
-#kubectl --kubeconfig admin.conf  -n kommander delete pod -l app=metallb,component=controller > /dev/null 2>&1
 
 # Wait for all apps ready
 info "Waiting for all applications to become ready. This should take 15 mins plus. If it craps out, run this command again:"
