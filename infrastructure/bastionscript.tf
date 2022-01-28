@@ -51,6 +51,11 @@ info "Getting tarballs"
 info "Getting airgapped bundle - This might take up to 30 mins"
 cd /home/centos/
 mkdir ~/tarballs && cd ~/tarballs
+curl -LO https://github.com/wercker/stern/releases/download/1.11.0/stern_linux_amd64
+mv stern_linux_amd64 stern
+chmod +x stern
+sudo mv stern /usr/local/bin/stern
+
 curl https://s3-us-gov-east-1.amazonaws.com/govcloud.downloads.d2iq.io/dkp/v2.1.1/dkp_airgapped_bundle_v${var.dkpversion}_linux_amd64.tar.gz --output airgapped_bundle.tar.gz
 tar -xvf airgapped_bundle.tar.gz --directory ../
 
