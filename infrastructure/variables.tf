@@ -16,6 +16,14 @@ variable "bundle_name" {
   default     = "konvoy_image_bundle_v2.1.1_linux_amd64.tar.gz"
 }
 
+resource "random_string" "uid" {
+  length  = 5
+  upper   = true
+  lower   = true
+  number  = true
+  special = false
+}
+
 variable "cluster_name" {
   description = "This is the name of our cluster"
   type        = string

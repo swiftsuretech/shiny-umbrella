@@ -5,4 +5,5 @@ alias t=terraform
 cd infrastructure
 terraform fmt
 terraform validate
-terraform apply -auto-approve
+CLUSTER_NAME=btsec-pov-$(date +%s | base64 | cut -c10-15)
+terraform apply -auto-approve -var cluster_name=$CLUSTER_NAME
