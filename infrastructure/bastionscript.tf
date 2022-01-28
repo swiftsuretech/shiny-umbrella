@@ -55,7 +55,6 @@ curl -LO https://github.com/wercker/stern/releases/download/1.11.0/stern_linux_a
 mv stern_linux_amd64 stern
 chmod +x stern
 sudo mv stern /usr/local/bin/stern
-
 curl https://s3-us-gov-east-1.amazonaws.com/govcloud.downloads.d2iq.io/dkp/v2.1.1/dkp_airgapped_bundle_v${var.dkpversion}_linux_amd64.tar.gz --output airgapped_bundle.tar.gz
 tar -xvf airgapped_bundle.tar.gz --directory ../
 
@@ -122,10 +121,8 @@ exit 0
 
 # Deploy Kommander
 info "Starting to Deploy Kommander"
-./kommander install --init > values.yaml
 cp /home/centos/configuration/values.yaml /home/centos/dkp-v${var.dkpversion}/values.yaml
 ./kommander install --kubeconfig admin.conf --kommander-applications-repository kommander-applications-v2.1.1 --installer-config values.yaml
-
 
 # Wait for all apps ready
 info "Waiting for all applications to become ready. This should take 15 mins plus. If it craps out, run this command again:"
