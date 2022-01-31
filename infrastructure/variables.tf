@@ -27,7 +27,7 @@ resource "random_string" "uid" {
 variable "cluster_name" {
   description = "This is the name of our cluster"
   type        = string
-  default     = "btsec-pov"
+  default     = "btsec-pov-airgapped"
 }
 
 variable "key" {

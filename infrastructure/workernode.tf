@@ -1,7 +1,7 @@
 resource "aws_instance" "btsec-pov-worker-node" {
   ami                                  = "ami-0686851c4e7b1a8e1"
   associate_public_ip_address          = false
-  availability_zone                    = "us-west-2b"
+  availability_zone                    = "us-west-2a"
   disable_api_termination              = false
   ebs_optimized                        = false
   get_password_data                    = false
@@ -16,7 +16,7 @@ resource "aws_instance" "btsec-pov-worker-node" {
   private_ip                           = "10.0.0.3${count.index}"
   secondary_private_ips                = []
   source_dest_check                    = true
-  subnet_id                            = aws_subnet.btsec-pov-subnet.id
+  subnet_id                            = aws_subnet.btsec-pov-subnet2.id
   count                                = 4
 
   tags = (merge(
@@ -34,7 +34,7 @@ resource "aws_instance" "btsec-pov-worker-node" {
 
   tenancy = "default"
   vpc_security_group_ids = [
-    aws_security_group.btsec-pov-internal-sg.id
+    aws_security_group.btsec-aws-node.id
   ]
 
   capacity_reservation_specification {

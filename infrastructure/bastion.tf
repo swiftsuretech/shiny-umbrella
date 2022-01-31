@@ -1,15 +1,14 @@
 resource "aws_instance" "btsec-pov-bastion-instance" {
   ami                         = "ami-0686851c4e7b1a8e1"
   associate_public_ip_address = true
-  availability_zone           = "us-west-2b"
+  availability_zone           = "us-west-2a"
   depends_on = [
     local_file.setup_bastion
   ]
-  disable_api_termination = false
-  ebs_optimized           = false
-  get_password_data       = false
-  hibernation             = false
-  #iam_instance_profile                 = "${var.cluster_name}-iam-profile"
+  disable_api_termination              = false
+  ebs_optimized                        = false
+  get_password_data                    = false
+  hibernation                          = false
   instance_initiated_shutdown_behavior = "stop"
   instance_type                        = "t2.xlarge"
   ipv6_address_count                   = 0
@@ -19,7 +18,7 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
   private_ip                           = "10.0.0.10"
   secondary_private_ips                = []
   source_dest_check                    = true
-  subnet_id                            = aws_subnet.btsec-pov-subnet.id
+  subnet_id                            = aws_subnet.btsec-pov-subnet2.id
   tags = {
     name       = "${var.cluster_name}-bastion-node"
     Name       = "${var.cluster_name}-bastion-node"
@@ -28,7 +27,7 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
   }
   tenancy = "default"
   vpc_security_group_ids = [
-    aws_security_group.btsec-pov-bastion-sg.id
+    aws_security_group.btsec-aws-bastion.id
   ]
 
   capacity_reservation_specification {

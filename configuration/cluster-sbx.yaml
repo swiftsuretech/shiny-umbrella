@@ -58,7 +58,7 @@ spec:
           audit-log-maxsize: "100"
           audit-log-path: /var/log/audit/kube-apiserver-audit.log
           audit-policy-file: /etc/kubernetes/audit-policy/apiserver-audit-policy.yaml
-          cloud-provider: "aws"
+          cloud-provider: ""
         extraVolumes:
         - hostPath: /etc/kubernetes/audit-policy/
           mountPath: /etc/kubernetes/audit-policy/
@@ -271,14 +271,14 @@ spec:
       nodeRegistration:
         criSocket: /run/containerd/containerd.sock
         kubeletExtraArgs:
-          cloud-provider: "aws"
+          cloud-provider: ""
           volume-plugin-dir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/
     joinConfiguration:
       discovery: {}
       nodeRegistration:
         criSocket: /run/containerd/containerd.sock
         kubeletExtraArgs:
-          cloud-provider: "aws"
+          cloud-provider: ""
           volume-plugin-dir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/
     preKubeadmCommands:
     - systemctl daemon-reload
@@ -462,7 +462,7 @@ spec:
         nodeRegistration:
           criSocket: /run/containerd/containerd.sock
           kubeletExtraArgs:
-            cloud-provider: "aws"
+            cloud-provider: ""
             volume-plugin-dir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/
       preKubeadmCommands:
       - systemctl daemon-reload
