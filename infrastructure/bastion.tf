@@ -27,7 +27,7 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
   }
   tenancy = "default"
   vpc_security_group_ids = [
-    aws_security_group.btsec-aws-bastion.id
+    aws_security_group.btsec-aws-bastion-sg.id
   ]
 
   capacity_reservation_specification {
@@ -62,6 +62,18 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
   }
 
   provisioner "file" {
+    source      = "setup_bastion"
+    destination = "/home/centos/setup_bastion"
+    connection {
+      type        = "ssh"
+      user        = "centos"
+      private_key = file("../keys/${var.key}")
+      host        = aws_instance.btsec-pov-bastion-instance.public_ip
+    }
+  }
+
+
+  provisioner "file" {
     source      = "../keys/${var.key}"
     destination = "/home/centos/.ssh/${var.key}"
     connection {
@@ -72,16 +84,7 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
     }
   }
 
-  provisioner "file" {
-    source      = "setup_bastion"
-    destination = "/home/centos/setup_bastion"
-    connection {
-      type        = "ssh"
-      user        = "centos"
-      private_key = file("../keys/${var.key}")
-      host        = aws_instance.btsec-pov-bastion-instance.public_ip
-    }
-  }
+
 
   provisioner "file" {
     source      = "../configuration"

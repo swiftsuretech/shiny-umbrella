@@ -34,7 +34,7 @@ resource "aws_instance" "btsec-pov-control-plane" {
 
   tenancy = "default"
   vpc_security_group_ids = [
-    aws_security_group.btsec-aws-controlplane.id
+    aws_security_group.btsec-aws-controlplane-sg.id
   ]
 
   capacity_reservation_specification {

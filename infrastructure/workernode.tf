@@ -34,7 +34,7 @@ resource "aws_instance" "btsec-pov-worker-node" {
 
   tenancy = "default"
   vpc_security_group_ids = [
-    aws_security_group.btsec-aws-node.id
+    aws_security_group.btsec-aws-node-sg.id
   ]
 
   capacity_reservation_specification {
