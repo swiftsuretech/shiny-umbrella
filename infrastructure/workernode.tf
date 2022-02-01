@@ -1,7 +1,7 @@
 resource "aws_instance" "btsec-pov-worker-node" {
   ami                                  = "ami-0686851c4e7b1a8e1"
   associate_public_ip_address          = false
-  availability_zone                    = "us-west-2a"
+  availability_zone                    = "us-west-2b"
   disable_api_termination              = false
   ebs_optimized                        = false
   get_password_data                    = false
@@ -13,7 +13,7 @@ resource "aws_instance" "btsec-pov-worker-node" {
   ipv6_addresses                       = []
   key_name                             = trimsuffix(var.key, ".pem")
   monitoring                           = false
-  private_ip                           = "10.0.0.3${count.index}"
+  private_ip                           = "10.0.0.7${count.index}"
   secondary_private_ips                = []
   source_dest_check                    = true
   subnet_id                            = aws_subnet.btsec-pov-subnet2.id

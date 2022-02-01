@@ -2,8 +2,9 @@ resource "aws_elb" "btsec-pov-lb" {
   name = "btsec-pov-lb"
   #  availability_zones = ["us-west-2a", "us-west-2b"]
   subnets = [
+    aws_subnet.btsec-pov-subnet1.id,
     aws_subnet.btsec-pov-subnet2.id,
-    aws_subnet.btsec-pov-subnet1.id
+    aws_subnet.btsec-pov-subnet3.id
 
   ]
   listener {

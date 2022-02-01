@@ -1,6 +1,6 @@
 # aws_security_group.btsec-aws-apiserver-lb:
 resource "aws_security_group" "btsec-aws-apiserver-lb" {
-  name        = "btsec-pov-add1-apiserver-sg"
+  name        = "btsec-pov-apiserver-sg"
   description = "Kubernetes cluster btsec-pov: apiserver-sg"
   vpc_id      = aws_vpc.btsec-pov-vpc.id
 
@@ -49,7 +49,7 @@ resource "aws_security_group" "btsec-aws-apiserver-lb" {
 
 # aws_security_group.btsec-aws-controlplane:
 resource "aws_security_group" "btsec-aws-controlplane-sg" {
-  name        = "btsec-pov-add1-controlplane-sg"
+  name        = "btsec-pov-controlplane-sg"
   description = "Kubernetes cluster btsec-pov: controlplane"
   vpc_id      = aws_vpc.btsec-pov-vpc.id
   egress = [
@@ -228,7 +228,7 @@ resource "aws_security_group" "btsec-aws-controlplane-sg" {
 
 # aws_security_group.btsec-aws-bastion:
 resource "aws_security_group" "btsec-aws-bastion-sg" {
-  name        = "btsec-pov-add1-bastion-sg"
+  name        = "btsec-pov-bastion-sg"
   description = "Kubernetes cluster btsec-pov: bastion"
   vpc_id      = aws_vpc.btsec-pov-vpc.id
   egress = [

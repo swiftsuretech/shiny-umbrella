@@ -30,5 +30,7 @@ resource "aws_network_acl" "btsec-pov-network-acl" {
   subnet_ids = [
     aws_subnet.btsec-pov-subnet1.id,
     aws_subnet.btsec-pov-subnet2.id,
+    aws_subnet.btsec-pov-subnet3.id,
+    aws_subnet.btsec-pov-subnet4.id,
   ]
 }

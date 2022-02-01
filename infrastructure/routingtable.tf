@@ -18,3 +18,21 @@ resource "aws_route_table" "btsec-pov-public-rt" {
     )
   ))
 }
+
+
+resource "aws_route_table" "btsec-pov-private-rt" {
+  vpc_id = aws_vpc.btsec-pov-vpc.id
+
+  lifecycle {
+    ignore_changes = [route, tags]
+  }
+  tags = (merge(
+    var.tags,
+    tomap({
+      "Name" : "${var.cluster_name}-routetable",
+      "kubernetes.io/cluster/${var.cluster_name}" : "owned",
+      "kubernetes.io/cluster" : "${var.cluster_name}"
+      }
+    )
+  ))
+}
