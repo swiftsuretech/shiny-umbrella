@@ -18,7 +18,7 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
   private_ip                           = "10.0.0.10"
   secondary_private_ips                = []
   source_dest_check                    = true
-  subnet_id                            = aws_subnet.btsec-pov-subnet2.id
+  subnet_id                            = aws_subnet.btsec-pov-subnet1.id
   tags = {
     name       = "${var.cluster_name}-bastion-node"
     Name       = "${var.cluster_name}-bastion-node"
@@ -84,8 +84,6 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
     }
   }
 
-
-
   provisioner "file" {
     source      = "../configuration"
     destination = "/home/centos/configuration"
@@ -116,15 +114,7 @@ resource "aws_instance" "btsec-pov-bastion-instance" {
     }
   }
 
-  provisioner "remote-exec" {
-    inline = [
-      "/home/centos/scripts/setup_bastion"
-    ]
-    connection {
-      type        = "ssh"
-      user        = "centos"
-      private_key = file("../keys/${var.key}")
-      host        = aws_instance.btsec-pov-bastion-instance.public_ip
-    }
+  provisioner "local-exec" {
+    command = "echo ${aws_instance.btsec-pov-bastion-instance.public_ip} > ../configuration/public_ip"
   }
 }
