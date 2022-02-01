@@ -307,7 +307,7 @@ metadata:
   namespace: default
 spec:
   controlPlaneEndpoint:
-    host: 10.0.0.20
+    host: 10.0.0.80
     port: 6443
   virtualIP:
     interface: eth0
