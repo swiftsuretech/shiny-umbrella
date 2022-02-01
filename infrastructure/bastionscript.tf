@@ -19,7 +19,7 @@ sudo yum -y install docker-ce docker-ce-cli containerd.io python3 python3-pip ep
 sudo sed -i 's/ExecStart\=\/usr\/bin\/dockerd -H fd\:/ExecStart\=\/usr\/bin\/dockerd -g \/home\/centos\/bundle -H fd\:/g' /lib/systemd/system/docker.service
 sudo bash -c "cat <<DDD > /etc/docker/daemon.json
 {
-  "data-root": "/home/centos/bundle"
+  \"data-root\": \"/home/centos/bundle\"
 }
 DDD"
 sudo systemctl daemon-reload
@@ -49,10 +49,9 @@ sudo sed -i 's/enforcing/permisive/g' /etc/selinux/config
 
 # Mount our bundle volume
 info "Mounting the bundle volume"
-mkdir /home/centos/bundle
-sudo chown -R centos:centos bundle/
 echo "UUID=6a72151c-690a-42b0-b3d5-8ab16c8309ce /home/centos/bundle ext4 defaults 0 0" | sudo tee -a /etc/fstab
 sudo mount -a
+sudo chown -R centos:centos bundle/
 
 # Set up the other nodes
 export ANSIBLE_HOST_KEY_CHECKING=False
@@ -77,6 +76,7 @@ info "Firing up Registry"
 sudo systemctl restart docker
 docker start registry
 info "Registry Built"
+sudo chown -R centos:centos bundle/
 
 cd /home/centos/dkp-v${var.dkpversion}/kib
 
