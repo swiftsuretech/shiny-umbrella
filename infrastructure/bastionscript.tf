@@ -15,7 +15,14 @@ sudo yum-config-manager \
     https://download.docker.com/linux/centos/docker-ce.repo
 
 sudo yum -y install epel-release
-sudo yum -y install docker-ce docker-ce-cli containerd.io python3 python3-pip epel-release ansible
+sudo yum -y install docker-ce docker-ce-cli containerd.io python3 python3-pip epel-release ansible pv jq
+sudo sed -i 's/ExecStart\=\/usr\/bin\/dockerd -H fd\:/ExecStart\=\/usr\/bin\/dockerd -g \/home\/centos\/bundle -H fd\:/g' /lib/systemd/system/docker.service
+sudo bash -c "cat <<DDD > /etc/docker/daemon.json
+{
+  "data-root": "/home/centos/bundle"
+}
+DDD"
+sudo systemctl daemon-reload
 sudo systemctl start docker
 sudo usermod -aG docker centos
 ansible-galaxy collection install ansible.posix
@@ -40,6 +47,13 @@ info "Setting SELinux to Permissive"
 sudo setenforce 0
 sudo sed -i 's/enforcing/permisive/g' /etc/selinux/config
 
+# Mount our bundle volume
+info "Mounting the bundle volume"
+mkdir /home/centos/bundle
+sudo chown -R centos:centos bundle/
+echo "UUID=6a72151c-690a-42b0-b3d5-8ab16c8309ce /home/centos/bundle ext4 defaults 0 0" | sudo tee -a /etc/fstab
+sudo mount -a
+
 # Set up the other nodes
 export ANSIBLE_HOST_KEY_CHECKING=False
 info "Prepping cluster nodes"
@@ -47,22 +61,23 @@ cd /home/centos/configuration
 ansible-playbook -i inventory.yaml configure_hosts.yaml
 
 # Get our packages
-info "Getting tarballs"
-info "Getting airgapped bundle - This might take up to 30 mins"
+info "Unzipping Airgap Bundle"
 cd /home/centos/
 mkdir ~/tarballs && cd ~/tarballs
 curl -LO https://github.com/wercker/stern/releases/download/1.11.0/stern_linux_amd64
 mv stern_linux_amd64 stern
 chmod +x stern
 sudo mv stern /usr/local/bin/stern
-curl https://s3-us-gov-east-1.amazonaws.com/govcloud.downloads.d2iq.io/dkp/v2.1.1/dkp_airgapped_bundle_v${var.dkpversion}_linux_amd64.tar.gz --output airgapped_bundle.tar.gz
+# curl https://s3-us-gov-east-1.amazonaws.com/govcloud.downloads.d2iq.io/dkp/v2.1.1/dkp_airgapped_bundle_v${var.dkpversion}_linux_amd64.tar.gz --output airgapped_bundle.tar.gz
+cd ~/bundle
 tar -xvf airgapped_bundle.tar.gz --directory ../
 
-# Running initial setup
-cd /home/centos/dkp-v${var.dkpversion}
-sleep 10
-info "Building the registry"
-sudo ./setup
+# Running registry setup
+info "Firing up Registry"
+sudo systemctl restart docker
+docker start registry
+info "Registry Built"
+
 cd /home/centos/dkp-v${var.dkpversion}/kib
 
 # Moving SSH Key
