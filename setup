@@ -7,3 +7,5 @@ terraform fmt
 terraform validate
 CLUSTER_NAME=btsec-pov-$(date +%s | base64 | cut -c10-15)
 terraform apply -auto-approve -var cluster_name=$CLUSTER_NAME
+PUBLIC_IP=$(cat ../configuration/public_ip)
+ssh -o StrictHostKeyChecking=no -i ../keys/btsec-pov-2.pem centos@$PUBLIC_IP /home/centos/scripts/setup_bastion
