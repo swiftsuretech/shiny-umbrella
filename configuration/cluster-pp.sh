@@ -9,13 +9,13 @@ readonly CLUSTER_NAME=cluster-${CLUSTER_SUFFIX,,}
 #### SET ENVIRONMENT VARIABLES ####
 ###################################
 
-readonly CONTROL_PLANE_1_ADDRESS="10.0.0.20"
-readonly CONTROL_PLANE_2_ADDRESS="10.0.0.21"
-readonly CONTROL_PLANE_3_ADDRESS="10.0.0.22"
-readonly WORKER_1_ADDRESS="10.0.0.30"
-readonly WORKER_2_ADDRESS="10.0.0.31"
-readonly WORKER_3_ADDRESS="10.0.0.32"
-readonly WORKER_4_ADDRESS="10.0.0.33"
+readonly CONTROL_PLANE_1_ADDRESS="10.0.0.80"
+readonly CONTROL_PLANE_2_ADDRESS="10.0.0.81"
+readonly CONTROL_PLANE_3_ADDRESS="10.0.0.82"
+readonly WORKER_1_ADDRESS="10.0.0.70"
+readonly WORKER_2_ADDRESS="10.0.0.71"
+readonly WORKER_3_ADDRESS="10.0.0.72"
+readonly WORKER_4_ADDRESS="10.0.0.73"
 readonly SSH_USER="centos"
 readonly SSH_PRIVATE_KEY_SECRET_NAME="${CLUSTER_NAME}-ssh-key"
 readonly SSH_PRIVATE_KEY="./btsec-pov-2.pem"
@@ -23,7 +23,7 @@ readonly SECRET_USER_OVERRIDES=${CLUSTER_NAME}-user-overrides
 readonly SSH_PORT=22
 readonly CONTROL_PLANE_NAME=${CLUSTER_NAME}-control-plane
 readonly WORKER_NAME=${CLUSTER_NAME}-md-0
-readonly CONTROL_PLANE_VIP=10.0.0.20
+readonly CONTROL_PLANE_VIP=10.0.0.80
 readonly CONTROL_PLANE_VIP_PORT=6443
 readonly CONTROL_PLANE_VIP_INTERFACE=eth0
 readonly DOCKER_REGISTRY_ADDRESS=http://$(hostname -I | awk '{print $1}'):5000
