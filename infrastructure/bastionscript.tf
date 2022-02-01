@@ -76,7 +76,7 @@ info "Firing up Registry"
 sudo systemctl restart docker
 docker start registry
 info "Registry Built"
-sudo chown -R centos:centos bundle/
+sudo chown -R centos:centos /home/centos/bundle/
 
 cd /home/centos/dkp-v${var.dkpversion}/kib
 
