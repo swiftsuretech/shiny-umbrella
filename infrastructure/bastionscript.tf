@@ -15,7 +15,7 @@ sudo yum-config-manager \
     https://download.docker.com/linux/centos/docker-ce.repo
 
 sudo yum -y install epel-release
-sudo yum -y install docker-ce docker-ce-cli containerd.io python3 python3-pip epel-release ansible pv jq
+sudo yum -y install docker-ce docker-ce-cli containerd.io python3 python3-pip epel-release ansible pv jq wget
 sudo sed -i 's/ExecStart\=\/usr\/bin\/dockerd -H fd\:/ExecStart\=\/usr\/bin\/dockerd -g \/home\/centos\/bundle -H fd\:/g' /lib/systemd/system/docker.service
 sudo bash -c "cat <<DDD > /etc/docker/daemon.json
 {
@@ -49,7 +49,7 @@ sudo sed -i 's/enforcing/permisive/g' /etc/selinux/config
 
 # Mount our bundle volume
 info "Mounting the bundle volume"
-echo "UUID=6a72151c-690a-42b0-b3d5-8ab16c8309ce /home/centos/bundle ext4 defaults 0 0" | sudo tee -a /etc/fstab
+echo "UUID=b6e251d4-80af-4fc6-8f9e-f8332bf02e3b /home/centos/bundle ext4 defaults 0 0" | sudo tee -a /etc/fstab
 sudo mount -a
 sudo chown -R centos:centos bundle/
 
@@ -68,16 +68,23 @@ mv stern_linux_amd64 stern
 chmod +x stern
 sudo mv stern /usr/local/bin/stern
 # curl https://s3-us-gov-east-1.amazonaws.com/govcloud.downloads.d2iq.io/dkp/v2.1.1/dkp_airgapped_bundle_v${var.dkpversion}_linux_amd64.tar.gz --output airgapped_bundle.tar.gz
-cd ~/bundle
-tar -xvf airgapped_bundle.tar.gz --directory ../
+
+if [ ! -f ~/airgapped_bundle.tar.gz ]
+then
+  sudo cp ~/bundle/airgapped_bundle.tar.gz ~/airgapped_bundle.tar.gz
+  cd ~
+  sudo chown centos:centos airgapped_bundle.tar.gz
+  pv airgapped_bundle.tar.gz | tar -xz
+  rm airgapped_bundle.tar.gz
+fi
 
 # Running registry setup
 info "Firing up Registry"
 sudo systemctl restart docker
 docker start registry
 info "Registry Built"
+info "Changing Permissions"
 sudo chown -R centos:centos /home/centos/bundle/
-
 cd /home/centos/dkp-v${var.dkpversion}/kib
 
 # Moving SSH Key
@@ -90,25 +97,25 @@ source <(ssh-agent)
 ssh-add /home/centos/.ssh/${var.key}
 
 # Build our Image
-info "Building the Konvoy Image"
+info "Building the Konvoy Image - Takes around 5 - 10 mins"
 ./konvoy-image provision --inventory-file inventory.yaml --overrides overrides-bundles.yaml
 
 # Spin up the bootstrap
 cp /home/centos/configuration/cluster-pp.sh /home/centos/dkp-v${var.dkpversion}/cluster-pp.sh
-info "Spinning up the bootstrap node"
+info "Spinning up the bootstrap cluster"
 cd /home/centos/dkp-v${var.dkpversion}
 ./cluster-pp.sh
 
 # Create the konvoy cluster
-info "Spinning up the Konvoy Cluster"
+info "Spinning up the Konvoy Management Cluster"
 cp /home/centos/configuration/cluster-sbx.yaml /home/centos/dkp-v${var.dkpversion}/cluster-sbx.yaml
 kubectl apply -f cluster-sbx.yaml
 
 # Wait for boostrap CP
 info "Waiting for our Bootstrap Control Plane to come online"
 sleep 15
-while [ $(kubectl get machine | grep Running | wc -l) -lt 1 ]; do
-  info "Waiting for Bootstrap Control Plane"
+while [ $(kubectl get machine | grep Running | wc -l) -lt 6 ]; do
+  info "Waiting for Bootstrap Cluster"
   sleep 30
 done
 
@@ -136,7 +143,7 @@ exit 0
 
 # Deploy Kommander
 info "Starting to Deploy Kommander"
-cp /home/centos/configuration/values.yaml /home/centos/dkp-v${var.dkpversion}/values.yaml
+#cp /home/centos/configuration/values.yaml /home/centos/dkp-v${var.dkpversion}/values.yaml
 ./kommander install --kubeconfig admin.conf --kommander-applications-repository kommander-applications-v2.1.1 --installer-config values.yaml
 
 # Wait for all apps ready
