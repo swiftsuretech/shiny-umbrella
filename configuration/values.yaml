@@ -231,11 +231,7 @@ apps:
   prometheus-thanos-traefik: null
   reloader: null
   thanos: null
-  traefik:
-    values: |
-      service:
-        annotations:
-          service.beta.kubernetes.io/aws-load-balancer-internal: "true"
+  traefik: null 
   traefik-forward-auth-mgmt: null
   velero:
     values: |
